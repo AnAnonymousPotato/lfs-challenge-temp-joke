@@ -1,1 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The LFS Grandmaster Challenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --primary-color: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.3);
+            --success-color: #3fb950;
+            --danger-color: #f85149;
+        }
 
+        /* --- Kernel Panic Theme --- */
+        body.kernel-panic-mode {
+            --bg-color: #0000AA;
+            --text-color: #FFFFFF;
+            font-family: 'Lucida Console', 'Courier New', monospace !important;
+        }
+        .kernel-panic-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #0000AA;
+            color: #FFFFFF;
+            z-index: 9999;
+            padding: 2em;
+            text-align: left;
+        }
+        body.kernel-panic-mode .kernel-panic-overlay { display: block; }
+        body.kernel-panic-mode > *:not(.kernel-panic-overlay):not(.panic-button) {
+            display: none;
+        }
+        .kernel-panic-overlay h1 { font-size: 2em; margin-bottom: 1em; }
+        .kernel-panic-overlay p { font-size: 1.2em; line-height: 1.5; }
+        .kernel-panic-overlay .blink {
+            animation: blink-animation 1s steps(2, start) infinite;
+        }
+        @keyframes blink-animation { to { visibility: hidden; } }
+
+        /* --- Base Styles --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+        header { text-align: center; padding: 60px 0; border-bottom: 1px solid var(--border-color); }
+        header .logo { font-family: 'Roboto Mono', monospace; font-size: 2rem; color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow); margin-bottom: 10px; }
+        header h1 { font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 20px; }
+        header p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto; }
+        
+        .cta-button { display: inline-block; background-color: var(--accent-color); color: #fff; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 20px var(--accent-glow); }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px var(--accent-glow); }
+
+        .fake-terminal {
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            max-width: 600px;
+            margin: 30px auto 0;
+            padding: 15px;
+            text-align: left;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9em;
+            height: 120px;
+            overflow: hidden;
+            position: relative;
+        }
+        .fake-terminal pre { white-space: pre-wrap; word-break: break-all; }
+        .fake-terminal .line { display: block; }
+
+        section { padding: 60px 0; }
+        h2 { font-size: 2.5rem; font-weight: 700; text-align: center; margin-bottom: 50px; color: #fff; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        
+        .card { background-color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 30px; transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .card h3 { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; margin-bottom: 15px; }
+        .card-prize h3 { color: var(--success-color); }
+        .card-prize .million {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--success-color);
+            text-align: center;
+            margin-top: 15px;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--success-color), 0 0 40px var(--success-color); }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px var(--success-color), 0 0 40px var(--success-color), 0 0 50px var(--success-color); }
+        }
+        
+        /* Leaderboard Table */
+        .leaderboard-container { overflow-x: auto; }
+        .leaderboard { width: 100%; border-collapse: collapse; font-family: 'Roboto Mono', monospace; }
+        .leaderboard th, .leaderboard td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .leaderboard th { color: var(--accent-color); }
+        .leaderboard tr:hover { background-color: #1a2028; }
+        .leaderboard .status { font-family: 'Poppins', sans-serif; }
+        
+        /* Progress Timeline */
+        .timeline { position: relative; width: 100%; height: 200px; background-color: var(--primary-color); border-radius: 10px; padding: 20px; border: 1px solid var(--border-color); }
+        .timeline-track { position: relative; width: 100%; height: 10px; background-color: var(--border-color); border-radius: 5px; margin-top: 80px; }
+        .timeline-line { position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px; }
+        #expected-progress { background-color: var(--accent-color); width: 85%; animation: stretch 2s ease-out forwards; }
+        #actual-progress { background-color: var(--danger-color); width: 8%; animation: stretch 1s ease-out forwards; }
+        @keyframes stretch { from { width: 0; } }
+        .timeline-label { position: absolute; top: -30px; font-weight: bold; }
+        .timeline-annotation { position: absolute; top: 20px; transform: translateX(-50%); text-align: center; font-size: 0.8em; width: 150px; }
+        
+        /* Flip Cards */
+        .flip-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .flip-card { background-color: transparent; height: 300px; perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; }
+        .flip-card-back { transform: rotateY(180deg); }
+        .flip-card-front h3 { font-size: 1.8rem; color: var(--accent-color); }
+        .flip-card-back h4 { color: var(--accent-color); font-size: 1rem; margin-bottom: 10px; }
+        .flip-card-back p { font-size: 0.9em; }
+
+        details { background-color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 10px; margin-top: 2em; }
+        summary { font-weight: 600; font-size: 1.5rem; padding: 20px; cursor: pointer; color: var(--accent-color); outline: none; }
+        .rules-content { padding: 30px; border-top: 1px solid var(--border-color); }
+
+        footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--border-color); color: #8b949e; }
+        
+        .panic-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+        .panic-button:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <button class="panic-button" id="panic-btn">💀</button>
+    <div class="kernel-panic-overlay" id="panic-overlay">
+        <h1>A fatal exception has occurred at 0x28:C0011E36</h1>
+        <p>The current application, SANITY.DLL, will be terminated.</p>
+        <p>* Press any key to terminate the current application.</p>
+        <p>* Press CTRL+ALT+DEL again to restart your computer. You will lose any unsaved information in all applications.</p>
+        <br>
+        <p>Press any key to continue <span class="blink">_</span></p>
+    </div>
+
+    <header>
+        <div class="logo">&lt;LFS_Challenge/&gt;</div>
+        <h1>The Grandmaster Challenge</h1>
+        <p>A true test of skill, patience, and dedication. Build a complete, bootable Linux system from nothing but source code.</p>
+        <div class="fake-terminal">
+            <pre id="terminal-output"></pre>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="overview">
+            <div class="grid">
+                <div class="card card-prize">
+                    <h3>// The Prize</h3>
+                    <p>For the sole victor who completes this monumental task.</p>
+                    <p class="million">$1,000,000</p>
+                </div>
+                <div class="card">
+                    <h3>// The Rules</h3>
+                    <p>This is a solo competition. Participants must work alone on physical hardware. No virtual machines. No pre-made scripts. No collaboration. Success is determined by a live, in-person audit.</p>
+                </div>
+                <div class="card">
+                    <h3>// The Stakes</h3>
+                    <p>Proceed at your own risk. You are solely responsible for your time, your sanity, and any potential data loss. This challenge is not for the faint of heart. Seriously.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="live-status">
+            <h2>Live Competition Status</h2>
+            <div class="leaderboard-container">
+                <table class="leaderboard" id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Participant</th>
+                            <th>Current Stage</th>
+                            <th class="status">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Leaderboard data will be injected by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="progress-visualization">
+            <h2>Progress Visualization</h2>
+            <div class="timeline">
+                <div class="timeline-label" style="left: 85%; transform: translateX(-50%);">Expected Progress</div>
+                <div class="timeline-label" style="left: 8%; transform: translateX(-50%); color: var(--danger-color);">Actual Progress</div>
+                <div class="timeline-track">
+                    <div class="timeline-line" id="expected-progress"></div>
+                    <div class="timeline-line" id="actual-progress"></div>
+                </div>
+                <div class="timeline-annotation" style="left: 5%;">Initial setup</div>
+                <div class="timeline-annotation" style="left: 50%;">Mid-point: Kernel Compilation</div>
+                <div class="timeline-annotation" style="left: 95%;">Finish Line</div>
+                <div class="timeline-annotation" style="left: 8%; top: 45px; color: var(--danger-color);">"We hit a small snag."</div>
+            </div>
+        </section>
+
+        <section id="participants">
+            <h2>Meet the Contenders</h2>
+            <div class="flip-card-grid" id="participant-cards">
+                <!-- Participant cards will be injected by JavaScript -->
+            </div>
+        </section>
+
+        <section id="rules">
+            <details>
+                <summary>Click to View Full Articles of Competition</summary>
+                <div class="rules-content">
+                    <h4>Preamble</h4>
+                    <p>This document outlines the official rules, terms, and conditions for "The Official LFS Group Challenge."</p>
+                    <h4>Article 1: Definitions</h4>
+                    <p>Key terms include The Challenger (the arbiter), The Participant (you), and The Source Material (the LFS book). The build must be on your own physical computer.</p>
+                    <h4>Article 2: The Challenge</h4>
+                    <p>Each Participant must individually build a complete, bootable Linux system. The installation must be on a physical internal partition, not a VM.</p>
+                    <h4>Article 3: Participant's Obligations</h4>
+                    <p>You are solely responsible for the entire process and accept all risks, including total data loss.</p>
+                    <h4>Article 4: The Challenger's Obligations</h4>
+                    <p>The Challenger defines the timeline, verifies completions, and has the final say in all disputes. This judgment is absolute and final.</p>
+                </div>
+            </details>
+        </section>
+    </div>
+
+    <footer>
+        <p>Organized & Arbitrated by Anirudh.</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Animated Matrix Background ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px arial';
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        // --- Fake Terminal Output ---
+        const terminalOutput = document.getElementById('terminal-output');
+        const terminalLines = [
+            'Compiling excuses... DONE.',
+            'ERROR 418: I\'m a teapot (and I need a break).',
+            'Fetching latest Stack Overflow answer...',
+            'Segmentation fault (core dumped, will to live also dumped).',
+            'Waiting for Rust rewrite of kernel...',
+            'syncing file systems... please wait',
+            './configure: error: cannot find sources (of motivation)',
+            'Cleaning up temporary files (my entire /home directory)...'
+        ];
+        let lineIndex = 0;
+        function typeTerminalLine() {
+            if (terminalOutput.childElementCount > 4) {
+                terminalOutput.removeChild(terminalOutput.firstChild);
+            }
+            const newLine = document.createElement('span');
+            newLine.className = 'line';
+            newLine.textContent = `root@lfs-challenge:~$ ${terminalLines[lineIndex]}`;
+            terminalOutput.appendChild(newLine);
+            lineIndex = (lineIndex + 1) % terminalLines.length;
+        }
+        setInterval(typeTerminalLine, 2500);
+
+        // --- Leaderboard Data ---
+        const leaderboardData = [
+            { rank: 1, name: 'Ansh', stage: '8/250', status: 'Found a really cool screensaver while waiting for GCC.' },
+            { rank: 2, name: 'Anirudh Gupta', stage: '5/250', status: 'Contemplating the philosophical implications of a bootloader.' },
+            { rank: 3, name: 'Lakshya', stage: '3/250', status: 'Currently arguing with `parted`.' },
+            { rank: 4, name: 'Sohan Kundu', stage: '2/250', status: 'Successfully misread Chapter 1.' },
+            { rank: 5, name: 'Tathya Gohil', stage: '1/250', status: 'Still choosing a wallpaper for the host OS.'},
+            { rank: 6, name: 'Kalp', stage: '-1/250', status: 'Formatted wrong partition. (Oops)' }
+        ];
+        const leaderboardTable = document.getElementById('leaderboard-table').getElementsByTagName('tbody')[0];
+        leaderboardData.forEach(p => {
+            let row = leaderboardTable.insertRow();
+            row.innerHTML = `<td>${p.rank}</td><td>${p.name}</td><td>${p.stage}</td><td class="status">${p.status}</td>`;
+        });
+
+        // --- Participant Flip Card Data ---
+        const participantData = [
+            { name: 'Sohan Kundu', failure: 'Chapter 2: Host System Requirements', excuse: 'My calculator doesn\'t have enough RAM.', words: '"It worked in a Docker container."' },
+            { name: 'Tathya Gohil', failure: 'Chapter 4: Final Preparations', excuse: 'The font in the LFS book is hard to read.', words: '"I\'m more of an ideas guy."' },
+            { name: 'Anirudh Gupta', failure: 'Chapter 1: Introduction', excuse: 'Was too busy building this website.', words: '"Who has time for this?"' },
+            { name: 'Kalp', failure: 'Chapter 5: Compiling the Toolchain', excuse: 'My cat unplugged the PC during a 12-hour compile.', words: '"It was compiling, I swear!"' },
+            { name: 'Lakshya', failure: 'Chapter 3: Partitioning', excuse: 'My hard drive identifies as read-only.', words: '"What\'s a filesystem?"' },
+            { name: 'Ansh', failure: 'Chapter 6: Kernel Compilation', excuse: 'Got distracted by a butterfly.', words: '"Wait, there\'s a prize?"' }
+        ];
+        const participantCardsContainer = document.getElementById('participant-cards');
+        participantData.forEach(p => {
+            const cardHTML = `
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>${p.name}</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <h4>Predicted Failure Point:</h4>
+                            <p>${p.failure}</p>
+                            <h4>Primary Excuse:</h4>
+                            <p>"${p.excuse}"</p>
+                            <h4>Famous Last Words:</h4>
+                            <p>"${p.words}"</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            participantCardsContainer.innerHTML += cardHTML;
+        });
+
+        // --- Kernel Panic Button ---
+        const panicBtn = document.getElementById('panic-btn');
+        panicBtn.addEventListener('click', () => {
+            document.body.classList.toggle('kernel-panic-mode');
+        });
+        document.getElementById('panic-overlay').addEventListener('click', () => {
+            document.body.classList.remove('kernel-panic-mode');
+        });
+    });
+    </script>
+</body>
+</html>
