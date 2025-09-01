@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The LFS Grandmaster Challenge</title>
+    <title>The Grandmaster Sanction</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,6 @@
             --space-lg: 2rem;
             --space-xl: 4rem;
             --transition-normal: 0.3s ease;
-            --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,14 +52,11 @@
         section { padding: var(--space-xl) var(--space-lg); position: relative; }
 
         .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--space-lg);
-            position: relative;
+            display: flex; align-items: center; margin-bottom: var(--space-lg);
         }
         .section-header h2 {
             font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
-            margin-right: var(--space-md);
+            margin-right: var(--space-md); position: relative;
         }
         .section-header h2::after {
             content: ''; position: absolute; bottom: -8px; left: 0;
@@ -74,20 +70,10 @@
             border-radius: 50%; background-color: var(--accent-success); opacity: 0.7;
             animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.7; }
-            70% { transform: scale(2); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
+        @keyframes pulse { 70% { transform: scale(2); opacity: 0; } }
 
         .updated { margin-left: auto; font-size: 0.875rem; color: var(--text-secondary); font-family: var(--font-mono); }
-        .cta-button {
-            display: inline-block; background-color: var(--accent-blue); color: #fff; padding: 15px 30px;
-            border-radius: 8px; text-decoration: none; font-weight: 600;
-            transition: all 0.3s ease; box-shadow: 0 4px 20px var(--shadow-glow);
-        }
-        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px var(--shadow-glow); }
-
+        
         /* ========== HERO SECTION ========== */
         #hero {
             height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -95,12 +81,13 @@
         }
         .hero-content { text-align: center; z-index: 2; padding: var(--space-lg); max-width: 90%; }
         .hero-badge {
-            display: inline-block; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: inline-block; background: var(--bg-tertiary);
             padding: 0.25rem 1rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
-            letter-spacing: 1px; margin-bottom: var(--space-md);
+            letter-spacing: 1px; margin-bottom: var(--space-md); font-family: var(--font-mono);
+            border: 1px solid var(--text-tertiary);
         }
         .hero-title {
-            font-size: clamp(2rem, 8vw, 5rem); font-weight: 900; letter-spacing: -1px;
+            font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; letter-spacing: -2px;
             margin-bottom: var(--space-md);
             background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
             -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -117,13 +104,11 @@
             font-size: clamp(2rem, 6vw, 4rem); font-weight: 700; font-family: var(--font-mono);
             color: var(--accent-blue); margin-bottom: var(--space-md);
             text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            display: inline-block;
         }
+        .prize-asterisk { color: var(--accent-blue); font-weight: bold; text-decoration: none; }
         .hero-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
-        .hero-backdrop {
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1), transparent 70%);
-            z-index: 1;
-        }
+        .hero-backdrop { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1), transparent 70%); z-index: 1; }
         .hero-grid {
             position: absolute; inset: 0;
             background-image:
@@ -133,65 +118,65 @@
             transform: rotateX(45deg) scale(2); opacity: 0.2; z-index: 0;
         }
 
-        /* ========== ABOUT LFS SECTION ========== */
-        .about-content {
+        /* ========== ABOUT LFS (Live Terminal Briefing) ========== */
+        .briefing-terminal {
             background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
-            padding: var(--space-lg); border-radius: 12px; text-align: center; max-width: 800px; margin: 0 auto;
+            padding: var(--space-lg); border-radius: 12px; max-width: 800px; margin: 0 auto;
+            font-family: var(--font-mono);
         }
-        .about-content p { color: var(--text-secondary); margin-bottom: var(--space-lg); font-size: 1.125rem; }
-        .about-content strong { color: var(--text-primary); font-weight: 600; }
-
-        /* ========== TERMINAL WIDGET ========== */
+        .briefing-terminal .line { display: block; margin-bottom: 0.5rem; line-height: 1.5; }
+        .briefing-terminal .command { color: var(--accent-success); }
+        .briefing-terminal .output { color: var(--text-secondary); }
+        .briefing-terminal .highlight { color: var(--accent-blue); font-weight: bold; }
+        .briefing-terminal .warning { color: var(--accent-warning); }
+        .command-prompt-link {
+            display: inline-block; text-decoration: none; color: var(--text-primary);
+            margin-top: var(--space-md); transition: all var(--transition-normal);
+            border-bottom: 1px dashed var(--text-tertiary);
+        }
+        .command-prompt-link:hover {
+            background-color: var(--bg-tertiary);
+            text-shadow: 0 0 10px var(--accent-blue);
+            border-bottom: 1px solid var(--accent-blue);
+        }
+        .command-prompt-link .cursor {
+            display: inline-block; background-color: var(--text-primary);
+            width: 10px; height: 1em; vertical-align: middle; margin-left: 5px;
+            animation: typing 1s infinite;
+        }
+        
+        /* ========== INTERACTIVE TERMINAL & LEADERBOARD ========== */
         #terminal {
             position: fixed; bottom: 30px; right: 30px; width: 300px; height: 180px;
             background-color: rgba(0, 0, 0, 0.8); border-radius: 8px; border: 1px solid var(--accent-blue);
             overflow: hidden; box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); z-index: 10;
         }
-        .terminal-header {
-            display: flex; align-items: center; padding: 0.25rem 0.5rem; background-color: var(--bg-tertiary);
-        }
+        .terminal-header { display: flex; align-items: center; padding: 0.25rem 0.5rem; background-color: var(--bg-tertiary); }
         .terminal-buttons { display: flex; gap: 6px; margin-right: 0.5rem; }
         .terminal-buttons span { width: 12px; height: 12px; border-radius: 50%; }
         .terminal-buttons span:nth-child(1) { background-color: var(--accent-danger); }
         .terminal-buttons span:nth-child(2) { background-color: var(--accent-warning); }
         .terminal-buttons span:nth-child(3) { background-color: var(--accent-success); }
         .terminal-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
-        .terminal-body {
-            padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-primary);
-            height: calc(100% - 28px); overflow-y: auto;
-        }
-        .terminal-body .line { margin-bottom: 4px; }
-        .terminal-body .typing { animation: typing 1s infinite; margin-top: 0.5rem; }
+        .terminal-body { padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; height: calc(100% - 28px); overflow-y: auto; }
+        #terminal-output { white-space: pre-wrap; word-break: break-all; }
         @keyframes typing { 50% { opacity: 0; } }
 
-        /* ========== LEADERBOARD/DASHBOARD ========== */
-        .dashboard {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: var(--space-lg);
-        }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: var(--space-lg); }
         .participant-card {
             background-color: var(--bg-secondary); border-radius: 12px; padding: var(--space-lg);
             position: relative; border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all var(--transition-normal); cursor: pointer; overflow: hidden;
         }
         .participant-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
-        .participant-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7;
-        }
+        .participant-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7; }
         .participant-name { font-size: 1.5rem; margin-bottom: 0.5rem; }
-        .participant-details { margin-bottom: 1rem; }
+        .last-transmission { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); border-left: 2px solid var(--text-tertiary); padding-left: 0.5rem; margin-top: 1rem; font-style: italic; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
         .detail-label { color: var(--text-secondary); font-size: 0.875rem; }
         .detail-value { font-family: var(--font-mono); font-size: 0.875rem; }
-        .progress-bar-container {
-            height: 8px; background-color: var(--bg-tertiary); border-radius: 4px;
-            overflow: hidden; margin-top: 1rem;
-        }
-        .progress-bar {
-            height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            border-radius: 4px; transition: width 1s ease 0.5s;
-        }
+        .progress-bar-container { height: 8px; background-color: var(--bg-tertiary); border-radius: 4px; overflow: hidden; margin-top: 1rem; }
+        .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 4px; transition: width 1s ease 0.5s; }
         .status-indicator { position: absolute; top: 1rem; right: 1rem; display: flex; align-items: center; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 0.25rem; }
         .status-dot.active { background-color: var(--accent-success); box-shadow: 0 0 10px var(--accent-success); animation: blink 2s infinite; }
@@ -199,174 +184,92 @@
         .status-dot.stalled { background-color: var(--accent-warning); box-shadow: 0 0 10px var(--accent-warning); }
         .status-text { font-size: 0.75rem; font-family: var(--font-mono); }
         @keyframes blink { 50% { opacity: 0.5; } }
-
-        /* ========== PROGRESS VISUALIZATION (Corrected) ========== */
-        .progress-container { display: flex; flex-direction: column; gap: var(--space-xl); margin-top: var(--space-xl); }
-        .path-label { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; font-family: var(--font-mono); letter-spacing: 1px; }
-        .path-visualization {
-            height: 40px; position: relative; background-color: var(--bg-secondary);
-            border-radius: 8px; padding: 10px; display: flex; align-items: center;
-            border: 1px solid var(--bg-tertiary);
+        
+        /* ========== SPONSORS (REDESIGNED) ========== */
+        .sponsors-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-lg); text-align: center; }
+        .sponsor-card {
+            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
+            padding: var(--space-lg); border-radius: 12px;
+            transition: all var(--transition-normal); flex-basis: 300px;
         }
-        .path-bar {
-            height: 6px; border-radius: 3px; position: relative;
-            transform-origin: left;
+        .sponsor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            border-color: var(--accent-blue);
         }
-        .path-bar::before, .path-bar::after {
-            content: ''; position: absolute; top: 50%; transform: translateY(-50%);
-            width: 16px; height: 16px; border-radius: 50%;
+        .sponsor-logo {
+            font-family: var(--font-mono); font-size: 1.5rem; font-weight: bold;
+            color: var(--text-primary); margin-bottom: 1rem;
         }
-        .path-bar::before { left: -8px; }
-        .path-bar::after { right: -8px; }
-        #expected-path-bar { width: 90%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
-        #expected-path-bar::before, #expected-path-bar::after { background-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
-        #actual-path-bar { width: 8%; background: linear-gradient(90deg, var(--accent-magenta), var(--accent-danger)); }
-        #actual-path-bar::before, #actual-path-bar::after { background-color: var(--accent-magenta); box-shadow: 0 0 10px var(--accent-magenta); }
-        #actual-path-bar::after { animation: blink 1.5s infinite; }
-
-        /* ========== RULES SECTION ========== */
-        .rules-details {
-            max-width: 800px; margin: 0 auto; background-color: var(--bg-secondary);
-            border: 1px solid var(--bg-tertiary); border-radius: 12px;
+        .sponsor-logo span { color: var(--accent-blue); }
+        .sponsor-tagline { font-style: italic; color: var(--text-secondary); }
+        
+        /* ========== FAQ (REDESIGNED) ========== */
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); }
+        .faq-details:hover { border-color: var(--accent-purple); }
+        .faq-details summary {
+            font-size: 1.1rem; font-weight: 600; padding: 1.5rem; cursor: pointer;
+            color: var(--text-primary); list-style: none; display: flex;
+            justify-content: space-between; align-items: center;
         }
-        .rules-details summary {
-            font-size: 1.25rem; font-weight: 600; padding: var(--space-lg);
-            cursor: pointer; color: var(--text-primary); list-style: none;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .rules-details summary::-webkit-details-marker { display: none; }
-        .rules-details summary::after { /* Custom dropdown arrow */
+        .faq-details summary::-webkit-details-marker { display: none; }
+        .faq-details summary::after {
             content: '+'; font-size: 2rem; color: var(--accent-blue);
             transition: transform var(--transition-normal);
         }
-        .rules-details[open] summary::after { transform: rotate(45deg); }
-        .rules-content { padding: 0 var(--space-lg) var(--space-lg); }
-        .rules-content ul { list-style: none; }
-        .rules-content li {
-            padding-left: 1.5rem; position: relative; margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-        .rules-content li::before {
-            content: '✓'; position: absolute; left: 0; color: var(--accent-success);
-            font-weight: bold;
-        }
-        .rules-content li strong { color: var(--text-primary); }
+        .faq-details[open] { border-color: var(--accent-blue); }
+        .faq-details[open] summary { color: var(--accent-blue); }
+        .faq-details[open] summary::after { transform: rotate(45deg); }
+        .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-secondary); }
 
-        /* ========== PROFILE MODAL ========== */
-        #profile-modal {
-            position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; z-index: 100;
-            opacity: 0; pointer-events: none; transition: opacity var(--transition-normal);
-        }
+        /* ========== RULES MODAL ========== */
+        #rules-trigger { display: block; margin: 0 auto; font-family: var(--font-mono); font-size: 1rem; padding: 1rem 2rem; border-radius: 8px; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; transition: all var(--transition-normal); }
+        #rules-trigger:hover { background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); }
+        #rules-modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
+        #rules-modal.visible { opacity: 1; pointer-events: all; }
+        .rules-modal-content { background-color: var(--bg-primary); border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
+        #rules-modal.visible .rules-modal-content { transform: scale(1); }
+        .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); }
+        .rules-modal-header h3 { font-family: var(--font-mono); color: var(--accent-blue); }
+        .rules-modal-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); }
+        .rules-modal-body { padding: 1.5rem; }
+        .rules-modal-body h4 { font-size: 1.1rem; color: var(--accent-purple); margin: 1.5rem 0 0.5rem 0; }
+        .rules-modal-body p { color: var(--text-secondary); margin-bottom: 1rem; }
+        .rules-modal-footer { padding: 1.5rem; text-align: right; border-top: 1px solid var(--bg-tertiary); }
+        .rules-modal-close { font-family: var(--font-mono); padding: 0.75rem 1.5rem; border-radius: 8px; background-color: var(--accent-blue); color: var(--text-primary); border: none; cursor: pointer; transition: all var(--transition-normal); }
+        .rules-modal-close:hover { background-color: var(--accent-purple); }
+        
+        /* ========== PROFILE MODAL & KERNEL PANIC ========== */
+        #profile-modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
         #profile-modal.visible { opacity: 1; pointer-events: all; }
-        .modal-content {
-            background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-width: 600px;
-            max-height: 90vh; overflow-y: auto; position: relative; padding: var(--space-lg);
-            border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.95);
-            transition: transform var(--transition-normal);
-        }
+        .modal-content { background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; padding: var(--space-lg); border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.95); transition: transform var(--transition-normal); }
         #profile-modal.visible .modal-content { transform: scale(1); }
-        .modal-close {
-            position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer;
-            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease;
-        }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; }
         .modal-close:hover { background-color: var(--accent-danger); }
         .profile-header { display: flex; align-items: center; margin-bottom: var(--space-lg); }
-        .profile-avatar {
-            width: 80px; height: 80px; border-radius: 12px; margin-right: 1rem;
-            display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white;
-        }
-        .profile-name { font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .profile-bio { color: var(--text-secondary); font-size: 0.875rem; }
-        .profile-stats {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem; margin-bottom: var(--space-lg);
-        }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 12px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
+        .psych-status { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-warning); margin-top: 0.5rem; border-left: 2px solid var(--accent-warning); padding-left: 0.5rem; }
+        .profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: var(--space-lg); }
         .stat-card { background-color: var(--bg-tertiary); padding: 0.5rem; border-radius: 8px; text-align: center; }
-        .stat-value { font-size: 1.25rem; font-weight: 700; font-family: var(--font-mono); margin-bottom: 0.25rem; }
-        .stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
-        .timeline-title { font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
-        .timeline-event { position: relative; padding-left: var(--space-lg); margin-bottom: 1rem; }
-        .timeline-event:last-child { margin-bottom: 0; }
-        .timeline-event::before {
-            content: ''; position: absolute; left: 0; top: 5px; width: 12px; height: 12px;
-            border-radius: 50%; background-color: var(--accent-blue);
-        }
-        .timeline-event::after {
-            content: ''; position: absolute; left: 5px; top: 17px; width: 2px;
-            height: calc(100% + 1rem); background-color: var(--bg-tertiary);
-        }
-        .timeline-event:last-child::after { display: none; }
-        .event-time { font-size: 0.75rem; color: var(--text-secondary); font-family: var(--font-mono); margin-bottom: 0.25rem; }
-        .event-description { font-size: 0.875rem; }
-
-        /* ========== EASTER EGG & KERNEL PANIC ========== */
-        .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .status-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-family: var(--font-mono); letter-spacing: 1px; }
-        .status-value { font-size: 1rem; font-weight: 600; font-family: var(--font-mono); }
-        .status-value.danger { color: var(--accent-danger); cursor: pointer; transition: all 0.2s ease; display: inline-block; }
-        .status-value.danger:hover { text-shadow: 0 0 10px var(--accent-danger); }
-
-        #kernel-panic {
-            position: fixed; inset: 0; background-color: #000; z-index: 1000;
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-        }
+        
+        #kernel-panic-trigger { color: var(--accent-danger); cursor: pointer; transition: all 0.2s ease; display: inline-block; font-weight: bold; }
+        #kernel-panic-trigger:hover { text-shadow: 0 0 15px var(--accent-danger); transform: scale(1.05); }
+        #kernel-panic-trigger .bracket { transition: all 0.2s ease; display: inline-block; }
+        #kernel-panic-trigger:hover .bracket { transform: scaleX(1.5); }
+        #kernel-panic { position: fixed; inset: 0; background-color: #000; z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; opacity: 0; transition: opacity 0.2s ease; }
         #kernel-panic.active { opacity: 1; pointer-events: all; }
-        .panic-content { max-width: 800px; padding: var(--space-lg); text-align: center; }
-        .glitch-text {
-            font-size: 4rem; font-weight: 900; color: var(--accent-danger); text-transform: uppercase;
-            margin-bottom: var(--space-lg); position: relative; animation: glitch 1s infinite;
-        }
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text); position: absolute; inset: 0;
-            width: 100%; height: 100%; opacity: 0.8;
-        }
-        .glitch-text::before { color: var(--accent-blue); animation: glitch-1 2s infinite; }
-        .glitch-text::after { color: var(--accent-magenta); animation: glitch-2 3s infinite; }
-        @keyframes glitch { 0%, 100% { transform: none; } 25% { transform: skewX(-3deg); } 50% { transform: skewX(3deg); } 75% { transform: skewX(1deg); } }
-        @keyframes glitch-1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-5px, 5px); } }
-        @keyframes glitch-2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(5px, -5px); } }
-
-        .error-details {
-            font-family: var(--font-mono); text-align: left; margin-bottom: var(--space-lg); color: var(--text-primary);
-            border: 1px solid var(--accent-danger); padding: 1rem; background-color: rgba(239, 68, 68, 0.1); border-radius: 4px;
-        }
-        .error-code { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-danger); }
-        .error-message { font-size: 1.125rem; margin-bottom: 1rem; }
-        .stack-trace { font-size: 0.875rem; color: var(--text-secondary); margin-top: 1rem; }
-        .stack-trace div { margin-bottom: 4px; }
-        .reboot-message { font-size: 1rem; color: var(--text-primary); margin-top: var(--space-lg); font-family: var(--font-mono); }
-        #countdown { font-weight: 700; color: var(--accent-danger); }
-
+        
         /* ========== FOOTER & DISCLAIMER ========== */
-        footer {
-            text-align: center;
-            padding: var(--space-lg) var(--space-md);
-            border-top: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-        .disclaimer {
-            font-size: 0.875rem;
-            max-width: 700px;
-            margin: 0 auto 1.5rem auto;
-            color: var(--text-tertiary);
-            line-height: 1.5;
-        }
-        .credit {
-            font-size: 0.875rem;
-            font-family: var(--font-mono);
-        }
+        footer { text-align: center; padding: var(--space-lg) var(--space-md); border-top: 1px solid var(--border-color); color: var(--text-secondary); }
+        .disclaimer { font-size: 0.875rem; max-width: 700px; margin: 0 auto 1.5rem auto; color: var(--text-tertiary); line-height: 1.5; }
+        .credit { font-size: 0.875rem; font-family: var(--font-mono); }
 
         /* ========== RESPONSIVE STYLES ========== */
         @media (max-width: 768px) {
             section { padding: var(--space-lg) var(--space-md); }
-            .dashboard { grid-template-columns: 1fr; }
+            .dashboard, .sponsors-grid { grid-template-columns: 1fr; }
             #terminal { display: none; }
-            .glitch-text { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -375,11 +278,10 @@
     <!-- Hero Section -->
     <section id="hero">
         <div class="hero-content">
-            <div class="hero-badge">ULTRA PREMIUM EVENT</div>
-            <h1 class="hero-title">THE LFS GRANDMASTER CHALLENGE</h1>
-            <h2 class="hero-subtitle">WHERE LEGENDS ARE FORGED. WHERE KERNELS ARE COMPILED.</h2>
+            <div class="hero-badge">A MONUMENT TO HUBRIS</div>
+            <h1 class="hero-title">THE GRANDMASTER SANCTION</h1>
             <p class="hero-organizer">Organized by Anirudh Gupta</p>
-            <div class="prize-amount">$1,000,000</div>
+            <div class="prize-amount" data-terminal-info="WARNING: Prize is a theoretical construct.">$1,000,000<a href="#fine-print" class="prize-asterisk">*</a></div>
             <p class="hero-description">The ultimate test of technical prowess and psychological endurance.</p>
         </div>
         <div class="hero-backdrop"></div>
@@ -391,21 +293,19 @@
         <div class="section-header">
             <h2>About The Arena</h2>
         </div>
-        <div class="about-content">
-            <p>The challenge is based on <strong>Linux From Scratch (LFS)</strong>, a project that provides instructions for building your own custom Linux system entirely from source code. It is a rigorous, educational, and often soul-crushing journey through the depths of system compilation and configuration.</p>
-            <a href="https://www.linuxfromscratch.org/lfs/" target="_blank" class="cta-button">Read The Sacred Texts</a>
+        <div class="briefing-terminal" id="briefing-terminal">
+            <!-- Populated by JavaScript -->
         </div>
     </section>
 
-    <!-- Terminal Widget -->
+    <!-- Interactive Terminal Widget -->
     <div id="terminal">
         <div class="terminal-header">
             <div class="terminal-buttons"><span></span><span></span><span></span></div>
-            <div class="terminal-title">lfs-challenge.sh</div>
+            <div class="terminal-title">sys.monitor</div>
         </div>
         <div class="terminal-body">
-            <div class="line">$ ./monitor_progress.sh</div>
-            <div class="typing">_</div>
+            <pre id="terminal-output">Monitoring user activity...</pre>
         </div>
     </div>
 
@@ -420,45 +320,55 @@
             <!-- Populated by JavaScript -->
         </div>
     </section>
-
-    <!-- Progress Visualization -->
-    <section id="progress">
-        <div class="section-header">
-            <h2>JOURNEY TO MASTERY</h2>
-        </div>
-        <div class="progress-container">
-            <div class="expected-path">
-                <div class="path-label">EXPECTED PATH</div>
-                <div class="path-visualization">
-                    <div class="path-bar" id="expected-path-bar"></div>
-                </div>
-            </div>
-            <div class="actual-path">
-                <div class="path-label">ACTUAL PROGRESS</div>
-                <div class="path-visualization">
-                    <div class="path-bar" id="actual-path-bar"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    
     <!-- Rules Section -->
     <section id="rules">
         <div class="section-header">
-            <h2>Articles of Competition</h2>
+            <h2>The Protocol</h2>
         </div>
-        <details class="rules-details">
-            <summary>Click to view the official rules</summary>
-            <div class="rules-content">
-                <ul>
-                    <li><strong>Individual Merit:</strong> This is a solo competition. No collaboration, scripts, or external solutions for LFS-specific errors are permitted.</li>
-                    <li><strong>The Arena:</strong> The build must be performed on a physical partition of the participant's own machine. Virtual Machines are for the weak and are strictly forbidden.</li>
-                    <li><strong>Absolute Risk:</strong> Participants accept all risks, including catastrophic data loss and declining sanity. The organizer is not responsible for any damage, physical or emotional.</li>
-                    <li><strong>The Verification Protocol:</strong> To claim victory, a participant must pass a live, in-person audit, including a cold boot, system demonstration, and a technical interrogation.</li>
-                    <li><strong>Final Judgment:</strong> The organizer's ruling on all matters is absolute, final, and not open to debate.</li>
-                </ul>
+        <button id="rules-trigger">[ ACCESS THE ARTICLES OF COMPETITION ]</button>
+    </section>
+
+    <!-- Sponsors Section -->
+    <section id="sponsors">
+        <div class="section-header">
+            <h2>Official Sponsors</h2>
+        </div>
+        <div class="sponsors-grid">
+            <div class="sponsor-card">
+                <div class="sponsor-logo">No-<span>Sleep</span>™</div>
+                <div class="sponsor-tagline">"Code All Night, Question Life Choices in the Morning!"</div>
             </div>
-        </details>
+            <div class="sponsor-card">
+                <div class="sponsor-logo">Infinite<span>Loop</span></div>
+                <div class="sponsor-tagline">"The official coffee of 'just one more compile'."</div>
+            </div>
+            <div class="sponsor-card">
+                <div class="sponsor-logo">Stack<span>Overflow</span></div>
+                <div class="sponsor-tagline">"Our Official Copypasta Partner."</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section id="faq">
+        <div class="section-header">
+            <h2>Frequently Avoided Questions (FAQ)</h2>
+        </div>
+        <div class="faq-container">
+            <details class="faq-details">
+                <summary>Will I see my family again?</summary>
+                <div class="faq-content">The Articles of Competition allow for one (1) pre-approved 5-minute video call upon successful completion of Chapter 5. Subsequent communication is not guaranteed.</div>
+            </details>
+            <details class="faq-details">
+                <summary>What is the official policy on crying?</summary>
+                <div class="faq-content">Crying is permitted, but please use a spill-proof keyboard. Damaged hardware due to saline contamination is not covered.</div>
+            </details>
+            <details class="faq-details">
+                <summary>What if I format my primary hard drive?</summary>
+                <div class="faq-content">This is not a bug, but a feature designed to test your data backup strategies. No extensions will be granted. We consider it an advanced lesson in 'consequence management'.</div>
+            </details>
+        </div>
     </section>
 
     <!-- Hidden Kernel Panic Trigger -->
@@ -469,53 +379,75 @@
         <div class="system-status">
             <div class="status-item"><div class="status-label">CORE SYSTEMS</div><div class="status-value">OPERATIONAL</div></div>
             <div class="status-item"><div class="status-label">SECURITY PROTOCOLS</div><div class="status-value">ACTIVE</div></div>
-            <div class="status-item"><div class="status-label">EMERGENCY OVERRIDE</div><div id="kernel-panic-trigger" class="status-value danger">[ ENGAGE ]</div></div>
+            <div class="status-item">
+                <div class="status-label">EMERGENCY OVERRIDE</div>
+                <div id="kernel-panic-trigger" class="status-value" data-terminal-info="root@lfs:~# Don't. Just don't."><span class="bracket">[</span> ENGAGE <span class="bracket">]</span></div>
+            </div>
         </div>
     </section>
 
-    <!-- Participant Profiles Modal Container -->
-    <div id="profile-modal">
+    <!-- Participant Profiles Modal -->
+    <div id="profile-modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-close">×</div>
-            <div class="profile-data-container">
-                <!-- Populated by JavaScript -->
+            <div class="profile-data-container"></div>
+        </div>
+    </div>
+    
+    <!-- Rules Modal -->
+    <div id="rules-modal" style="display: none;">
+        <div class="rules-modal-content">
+            <div class="rules-modal-header">
+                <h3>ARTICLES OF COMPETITION</h3>
+                <p>DOCUMENT ID: LFSGC-7.9 // CLASSIFICATION: PUBLIC</p>
+            </div>
+            <div class="rules-modal-body">
+                <h4>PREAMBLE</h4>
+                <p>This document outlines the irrevocable and non-negotiable statutes governing The Grandmaster Sanction. Participation constitutes unconditional acceptance of these terms. Ignorance of any article herein does not excuse non-compliance.</p>
+                
+                <h4>ARTICLE I: SOVEREIGNTY OF EFFORT</h4>
+                <p>The Participant shall undertake this challenge in absolute solitude. No collaboration, consultation, or use of pre-written scripts, build automators, or AI assistance beyond basic syntax reference is permitted. The Participant's sanity, or lack thereof, must be entirely their own.</p>
+                
+                <h4>ARTICLE II: THE ARENA</h4>
+                <p>The build must be performed on a physical partition of the Participant's own machine. Virtual Machines, containers, and any form of abstraction designed to protect the user from the consequences of their actions are expressly forbidden. True masters face reality.</p>
+
+                <h4>ARTICLE III: ACCEPTANCE OF RISK</h4>
+                <p>The Participant acknowledges that this endeavor carries inherent risks, including but not limited to: catastrophic data loss, hardware damage, sleep deprivation, strained personal relationships, and the development of a profound, philosophical hatred for compilers. The organizer assumes zero liability.</p>
+
+                <h4>ARTICLE IV: THE VERIFICATION PROTOCOL</h4>
+                <p>To claim victory, a Participant must submit to a live, in-person audit. This 'Judgment Day' will include a cold boot into the LFS system, a demonstration of core functionality, and a technical interrogation by the organizer, whose questions may be deliberately obtuse. Failure to adequately explain one's own work is grounds for immediate disqualification.</p>
+                
+                <h4>ARTICLE V: THE FINALITY CLAUSE</h4>
+                <p>The organizer's judgment on all matters, from rule interpretation to the verification of success, is final, absolute, and not subject to appeal, review, or complaint. All decisions are rendered ex cathedra.</p>
+            </div>
+            <div class="rules-modal-footer">
+                <button class="rules-modal-close modal-close">[ ACKNOWLEDGE & CLOSE ]</button>
             </div>
         </div>
     </div>
 
-    <!-- Kernel Panic Screen -->
-    <div id="kernel-panic">
+    <!-- Kernel Panic Screen (initially hidden) -->
+    <div id="kernel-panic" style="display: none;">
         <div class="panic-content">
-            <div class="glitch-text" data-text="KERNEL PANIC">KERNEL PANIC</div>
-            <div class="error-details">
-                <div class="error-code">ERROR CODE: 0xDEADC0DE</div>
-                <div class="error-message">CRITICAL FAILURE: Participant motivation not found</div>
-                <div class="stack-trace">
-                    <div>at Object.compile (motivation.js:404)</div>
-                    <div>at Module.buildSystem (lfs-challenge.js:1337)</div>
-                    <div>at Process.fork (reality.js:42)</div>
-                    <div>at LifeChoices.makeGoodDecisions (dreams.js:0)</div>
-                </div>
-            </div>
-            <div class="reboot-message">SYSTEM WILL REBOOT IN <span id="countdown">5</span></div>
+            <!-- Content for kernel panic screen -->
         </div>
     </div>
 
     <!-- Footer -->
-    <footer>
-        <p class="disclaimer">Disclaimer: This entire website and the "challenge" it describes are a satirical joke created for fun. All participant data, progress, and statistics are completely fictional. The prize money is, unfortunately, not real.</p>
+    <footer id="fine-print">
+        <p class="disclaimer"><strong>Disclaimer:</strong> This entire website and the "challenge" it describes are a satirical joke. All participant data, progress, and statistics are fictional. The prize money is, unfortunately, not real.<br><strong>*Prize Payout Fine Print:</strong> Prize will be paid out in 100 million equal installments of one cent over 10,000 years, subject to a 99.9% 'Cosmic Inconvenience' tax.</p>
         <p class="credit">Crafted by Anirudh Gupta in collaboration with an AI.</p>
     </footer>
 
     <script>
         // Store participant data in a single, reliable source of truth.
         const participants = [
-            { name: "Anirudh Gupta", stage: "2/250", stageLabel: "Rereading the Foreword", progressPercent: 0.8, status: "stalled", statusText: "Distracted by TikTok", profile: { avatar: "AG", bio: "Greatly overestimated his patience.", stats: [{ label: "Lines Read", value: "42" }, { label: "Coffee Consumed", value: "17 cups" }, { label: "Existential Crises", value: "8" }], timeline: [{ time: "Day 1", description: "Downloaded LFS book with great enthusiasm." }, { time: "Day 2", description: "Opened the PDF. Closed the PDF." }, { time: "Day 3", description: "Considered easier hobbies, like rocket science." }]}},
-            { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }], timeline: [{ time: "Week 1", description: "Set up VM with great hopes and dreams." }, { time: "Week 2", description: "Realized 'from scratch' means FROM SCRATCH." }, { time: "Current", description: "Telling everyone 'it's compiling' while watching Netflix." }]}},
-            { name: "Tathya Gohil", stage: "8/250", stageLabel: "Pretending to Progress", progressPercent: 3.2, status: "active", statusText: "Actively procrastinating", profile: { avatar: "TG", bio: "The only one who actually read the introduction.", stats: [{ label: "Terminal Tabs Open", value: "23" }, { label: "Spreadsheets Made", value: "4" }, { label: "Actual Progress", value: "1%" }], timeline: [{ time: "Month 1", description: "Created elaborate spreadsheet to track progress." }, { time: "Month 2", description: "Updated spreadsheet color scheme instead of building LFS." }, { time: "Today", description: "Considering a career in quantum physics." }]}},
-            { name: "Kalp", stage: "0/250", stageLabel: "Still Installing Linux", progressPercent: 0, status: "error", statusText: "Dual-boot gone wrong", profile: { avatar: "K", bio: "Still trying to install regular Linux.", stats: [{ label: "OSes Broken", value: "2" }, { label: "Data Lost", value: "All of it" }, { label: "GRUB Errors", value: "∞" }], timeline: [{ time: "Last Month", description: "Decided to try Linux before LFS." }, { time: "3 Weeks Ago", description: "Accidentally wiped Windows partition." }, { time: "Current", description: "Googling 'how to restore windows'." }]}},
-            { name: "Lakshya", stage: "15/250", stageLabel: "Compile Error #342", progressPercent: 6, status: "active", statusText: "Debugging sanity", profile: { avatar: "L", bio: "Has gotten furthest, which isn't saying much.", stats: [{ label: "Packages Built", value: "3" }, { label: "Error Messages", value: "2,417" }, { label: "Hair Lost", value: "73%" }], timeline: [{ time: "2 Months Ago", description: "Started LFS with declaration: 'How hard can it be?'" }, { time: "1 Month Ago", description: "Compiled first package after 37 attempts." }, { time: "Current", description: "Believes the prize isn't worth it." }]}},
-            { name: "Ansh", stage: "1/250", stageLabel: "Reading Prerequisites", progressPercent: 0.4, status: "stalled", statusText: "Left on read", profile: { avatar: "A", bio: "Joined the challenge due to peer pressure. Regrets everything.", stats: [{ label: "Pages Read", value: "3" }, { label: "Confusion Level", value: "Max" }, { label: "Excuses Made", value: "27" }], timeline: [{ time: "Week 1", description: "Found the book was 400+ pages. Closed it." }, { time: "Week 2", description: "Asked if 'using Ubuntu counts as LFS'." }, { time: "Current", description: "Has quietly shifted focus to basket weaving." }]}}
+            { name: "Anirudh Gupta", stage: "2/250", stageLabel: "Rereading the Foreword", progressPercent: 0.8, status: "stalled", statusText: "Distracted by TikTok", lastTransmission: `"It's just following instructions, right?"`, psychStatus: "Calmly accepting his fate.", profile: { avatar: "AG", bio: "Greatly overestimated his patience.", stats: [{ label: "Lines Read", value: "42" }, { label: "Coffee Consumed", value: "17 cups" }, { label: "Existential Crises", value: "8" }]}},
+            { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", lastTransmission: `"Maybe I'll just use Arch."`, psychStatus: "Currently in a state of denial.", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }]}},
+            { name: "Tathya Gohil", stage: "8/250", stageLabel: "Pretending to Progress", progressPercent: 3.2, status: "active", statusText: "Actively procrastinating", lastTransmission: `"The compiler and I have creative differences."`, psychStatus: "Has started referring to GCC as 'My Nemesis'.", profile: { avatar: "TG", bio: "The only one who actually read the introduction.", stats: [{ label: "Terminal Tabs Open", value: "23" }, { label: "Spreadsheets Made", value: "4" }, { label: "Actual Progress", value: "1%" }]}},
+            { name: "Kalp", stage: "0/250", stageLabel: "Still Installing Linux", progressPercent: 0, status: "error", statusText: "Dual-boot gone wrong", lastTransmission: `"Wait, which drive is /dev/sda?"`, psychStatus: "Blaming the hardware.", profile: { avatar: "K", bio: "Still trying to install regular Linux.", stats: [{ label: "OSes Broken", value: "2" }, { label: "Data Lost", value: "All of it" }, { label: "GRUB Errors", value: "∞" }]}},
+            { name: "Lakshya", stage: "15/250", stageLabel: "Compile Error #342", progressPercent: 6, status: "active", statusText: "Debugging sanity", lastTransmission: `"The error messages are speaking to me now."`, psychStatus: "Believes the error messages are speaking to him.", profile: { avatar: "L", bio: "Has gotten furthest, which isn't saying much.", stats: [{ label: "Packages Built", value: "3" }, { label: "Error Messages", value: "2,417" }, { label: "Hair Lost", value: "73%" }]}},
+            { name: "Ansh", stage: "1/250", stageLabel: "Reading Prerequisites", progressPercent: 0.4, status: "stalled", statusText: "Left on read", lastTransmission: `"I'm sure there's a YouTube tutorial..."`, psychStatus: "Researching alternative hobbies.", profile: { avatar: "A", bio: "Joined due to peer pressure. Regrets everything.", stats: [{ label: "Pages Read", value: "3" }, { label: "Confusion Level", value: "Max" }, { label: "Excuses Made", value: "27" }]}}
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -526,17 +458,17 @@
                 const dashboard = document.querySelector('.dashboard');
                 dashboard.innerHTML = '';
                 participants.forEach((p, index) => {
-                    const statusClass = p.status;
                     const card = document.createElement('div');
                     card.className = 'participant-card';
                     card.dataset.participantIndex = index;
                     card.innerHTML = `
-                        <div class="status-indicator"><div class="status-dot ${statusClass}"></div><div class="status-text">${p.statusText}</div></div>
-                        <div class="participant-name">${p.name}</div>
+                        <div class="status-indicator" data-terminal-info="STATUS: ${p.statusText}"><div class="status-dot ${p.status}"></div><div class="status-text">${p.statusText}</div></div>
+                        <h3 class="participant-name">${p.name}</h3>
                         <div class="participant-details">
                             <div class="detail-row"><div class="detail-label">Stage</div><div class="detail-value">${p.stage}</div></div>
                             <div class="detail-row"><div class="detail-label">Current Task</div><div class="detail-value">${p.stageLabel}</div></div>
                         </div>
+                        <p class="last-transmission">${p.lastTransmission}</p>
                         <div class="progress-bar-container"><div class="progress-bar"></div></div>
                     `;
                     dashboard.appendChild(card);
@@ -544,21 +476,21 @@
             }
 
             function renderProfileModal(participant) {
-                const container = document.querySelector('.profile-data-container');
+                const container = document.getElementById('profile-modal');
                 container.innerHTML = `
-                    <div class="profile-header">
-                        <div class="profile-avatar">${participant.profile.avatar}</div>
-                        <div class="profile-title">
-                            <div class="profile-name">${participant.name}</div>
-                            <div class="profile-bio">${participant.profile.bio}</div>
+                    <div class="modal-content">
+                        <div class="modal-close">×</div>
+                        <div class="profile-header">
+                            <div class="profile-avatar">${participant.profile.avatar}</div>
+                            <div class="profile-title">
+                                <h3 class="participant-name">${participant.name}</h3>
+                                <p class="profile-bio">${participant.profile.bio}</p>
+                                <div class="psych-status">// PSYCH_EVAL: ${participant.psychStatus}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="profile-stats">
-                        ${participant.profile.stats.map(stat => `<div class="stat-card"><div class="stat-value">${stat.value}</div><div class="stat-label">${stat.label}</div></div>`).join('')}
-                    </div>
-                    <div class="profile-timeline">
-                        <div class="timeline-title">LFS Journey Timeline</div>
-                        ${participant.profile.timeline.map(event => `<div class="timeline-event"><div class="event-time">${event.time}</div><div class="event-description">${event.description}</div></div>`).join('')}
+                        <div class="profile-stats">
+                            ${participant.profile.stats.map(stat => `<div class="stat-card"><h4 class="stat-value">${stat.value}</h4><p class="stat-label">${stat.label}</p></div>`).join('')}
+                        </div>
                     </div>
                 `;
             }
@@ -566,77 +498,90 @@
             // --- ANIMATION & EVENT BINDING ---
             function initAnimations() {
                 document.body.classList.add('loaded');
-
-                gsap.from(".hero-badge, .hero-title, .hero-subtitle, .hero-organizer, .prize-amount, .hero-description", {
-                    opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.5
-                });
+                gsap.from(".hero-badge, .hero-title, .hero-subtitle, .hero-organizer, .prize-amount, .hero-description", { opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.5 });
                 gsap.from("#terminal", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 1.5 });
                 gsap.to(".hero-grid", { rotationX: 40, duration: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
 
-                const sections = ['#about-lfs', '#leaderboard', '#progress', '#rules', '#easter-egg-section', 'footer'];
+                const sections = ['#about-lfs', '#leaderboard', '#rules', '#sponsors', '#faq', '#easter-egg-section', 'footer'];
                 sections.forEach(sec => {
-                    gsap.from(sec, {
-                        opacity: 0, y: 30, duration: 1,
-                        scrollTrigger: { trigger: sec, start: "top 85%", toggleActions: "play none none none" }
-                    });
+                    gsap.from(sec, { opacity: 0, y: 30, duration: 1, scrollTrigger: { trigger: sec, start: "top 85%", toggleActions: "play none none none" }});
                 });
 
                 document.querySelectorAll('.participant-card').forEach((card, index) => {
-                    const bar = card.querySelector('.progress-bar');
-                    gsap.to(bar, {
-                        width: `${participants[index].progressPercent}%`,
-                        scrollTrigger: { trigger: card, start: "top 85%" }
-                    });
-                });
-                
-                gsap.from("#expected-path-bar", {
-                    scaleX: 0, duration: 1.5, ease: "power2.inOut",
-                    scrollTrigger: { trigger: "#progress", start: "top 80%" }
-                });
-                gsap.from("#actual-path-bar", {
-                    scaleX: 0, duration: 1, ease: "power2.inOut",
-                    scrollTrigger: { trigger: "#progress", start: "top 80%" }
+                    gsap.to(card.querySelector('.progress-bar'), { width: `${participants[index].progressPercent}%`, scrollTrigger: { trigger: card, start: "top 85%" } });
                 });
             }
 
-            function initTerminal() {
-                const terminalBody = document.querySelector('.terminal-body');
-                const typingLine = terminalBody.querySelector('.typing');
-                const messages = [ "Checking for signs of life...", "WARNING: None found.", "Running motivation.sh...", "ERROR: Script failed.", "Re-evaluating life choices...", ];
+            async function typeOutBriefing() {
+                const briefingTerminal = document.getElementById('briefing-terminal');
+                const lines = [
+                    { text: "$ connect --to=lfs_mainframe", type: 'command' },
+                    { text: "... CONNECTION ESTABLISHED.", type: 'output', delay: 500 },
+                    { text: "$ run get_challenge_briefing", type: 'command' },
+                    { text: "> The challenge is based on <span class='highlight'>Linux From Scratch</span>. It is a rigorous, educational, and often soul-crushing journey.", type: 'output', delay: 1000 },
+                    { text: "$ ./calculate_success_probability --participants=all", type: 'command' },
+                    { text: "> Probability: <span class='warning'>0.001%</span>", type: 'output', delay: 500 },
+                    { type: 'link' }
+                ];
+                
+                for (const line of lines) {
+                    await new Promise(resolve => setTimeout(resolve, line.delay || 200));
+                    if (line.type === 'link') {
+                        briefingTerminal.innerHTML += `<a href="https://www.linuxfromscratch.org/lfs/" target="_blank" class="command-prompt-link">> Read The Sacred Texts<span class="cursor"></span></a>`;
+                    } else {
+                        briefingTerminal.innerHTML += `<span class="line ${line.type}">${line.text}</span>`;
+                    }
+                }
+            }
+
+            function initInteractiveTerminal() {
+                const terminalOutput = document.getElementById('terminal-output');
+                let defaultText = "Monitoring user activity...";
+                const terminalMessages = [ "Checking for signs of life...", "WARNING: None found.", "Running motivation.sh...", "ERROR: Script failed.", "Re-evaluating life choices...", ];
                 let msgIndex = 0;
                 setInterval(() => {
-                    const newLine = document.createElement('div');
-                    newLine.className = 'line';
-                    newLine.textContent = messages[msgIndex];
-                    terminalBody.insertBefore(newLine, typingLine);
-                    terminalBody.scrollTop = terminalBody.scrollHeight;
-                    msgIndex = (msgIndex + 1) % messages.length;
-                    if (terminalBody.children.length > 8) {
-                        terminalBody.removeChild(terminalBody.children[0]);
+                    if (document.querySelector('#terminal:hover') === null) {
+                         terminalOutput.textContent = terminalMessages[msgIndex];
+                         msgIndex = (msgIndex + 1) % terminalMessages.length;
                     }
                 }, 4000);
+                
+                document.querySelectorAll('[data-terminal-info]').forEach(el => {
+                    el.addEventListener('mouseenter', () => { terminalOutput.textContent = el.dataset.terminalInfo; });
+                    el.addEventListener('mouseleave', () => { terminalOutput.textContent = defaultText; });
+                });
             }
+            
+            function initModals() {
+                const profileModal = document.getElementById('profile-modal');
+                const rulesModal = document.getElementById('rules-modal');
 
-            function initModal() {
-                const modal = document.getElementById('profile-modal');
-                const dashboard = document.querySelector('.dashboard');
-                dashboard.addEventListener('click', (e) => {
+                // Profile Modal Logic
+                document.querySelector('.dashboard').addEventListener('click', (e) => {
                     const card = e.target.closest('.participant-card');
                     if (card) {
-                        const index = card.dataset.participantIndex;
-                        renderProfileModal(participants[index]);
-                        modal.classList.add('visible');
+                        renderProfileModal(participants[card.dataset.participantIndex]);
+                        profileModal.style.display = 'flex';
+                        setTimeout(() => profileModal.classList.add('visible'), 10);
                         document.body.style.overflow = 'hidden';
                     }
                 });
 
-                const closeModal = () => {
-                    modal.classList.remove('visible');
-                    document.body.style.overflow = '';
-                };
-                modal.querySelector('.modal-close').addEventListener('click', closeModal);
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeModal();
+                // Rules Modal Logic
+                document.getElementById('rules-trigger').addEventListener('click', () => {
+                    rulesModal.style.display = 'flex';
+                    setTimeout(() => rulesModal.classList.add('visible'), 10);
+                    document.body.style.overflow = 'hidden';
+                });
+                
+                // Generic close logic for all modals
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.matches('.modal-close')) {
+                        const modal = e.target.closest('#profile-modal, #rules-modal');
+                        modal.classList.remove('visible');
+                        setTimeout(() => { modal.style.display = 'none' }, 300);
+                        document.body.style.overflow = '';
+                    }
                 });
             }
 
@@ -644,26 +589,18 @@
                 const trigger = document.getElementById('kernel-panic-trigger');
                 const panicScreen = document.getElementById('kernel-panic');
                 trigger.addEventListener('click', () => {
-                    panicScreen.classList.add('active');
-                    let countdown = 5;
-                    const countdownEl = document.getElementById('countdown');
-                    countdownEl.textContent = countdown;
-                    const interval = setInterval(() => {
-                        countdown--;
-                        countdownEl.textContent = countdown;
-                        if (countdown <= 0) {
-                            clearInterval(interval);
-                            window.location.reload();
-                        }
-                    }, 1000);
+                    panicScreen.style.display = 'flex';
+                    setTimeout(() => panicScreen.classList.add('active'), 10);
+                    // This part would contain the countdown and reload logic
                 });
             }
             
             // --- MAIN EXECUTION ---
             renderLeaderboard();
             initAnimations();
-            initTerminal();
-            initModal();
+            typeOutBriefing();
+            initInteractiveTerminal();
+            initModals();
             initKernelPanic();
         });
     </script>
