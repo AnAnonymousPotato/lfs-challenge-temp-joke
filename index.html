@@ -81,6 +81,12 @@
         }
 
         .updated { margin-left: auto; font-size: 0.875rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .cta-button {
+            display: inline-block; background-color: var(--accent-blue); color: #fff; padding: 15px 30px;
+            border-radius: 8px; text-decoration: none; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: 0 4px 20px var(--shadow-glow);
+        }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 25px var(--shadow-glow); }
 
         /* ========== HERO SECTION ========== */
         #hero {
@@ -104,11 +110,8 @@
             margin-bottom: 1rem; letter-spacing: 2px;
         }
         .hero-organizer {
-            font-size: 1rem;
-            font-family: var(--font-mono);
-            color: var(--text-secondary);
-            margin-bottom: var(--space-lg);
-            letter-spacing: 1px;
+            font-size: 1rem; font-family: var(--font-mono); color: var(--text-secondary);
+            margin-bottom: var(--space-lg); letter-spacing: 1px;
         }
         .prize-amount {
             font-size: clamp(2rem, 6vw, 4rem); font-weight: 700; font-family: var(--font-mono);
@@ -129,6 +132,14 @@
             background-size: 50px 50px; perspective: 1000px; transform-style: preserve-3d;
             transform: rotateX(45deg) scale(2); opacity: 0.2; z-index: 0;
         }
+
+        /* ========== ABOUT LFS SECTION ========== */
+        .about-content {
+            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
+            padding: var(--space-lg); border-radius: 12px; text-align: center; max-width: 800px; margin: 0 auto;
+        }
+        .about-content p { color: var(--text-secondary); margin-bottom: var(--space-lg); font-size: 1.125rem; }
+        .about-content strong { color: var(--text-primary); font-weight: 600; }
 
         /* ========== TERMINAL WIDGET ========== */
         #terminal {
@@ -201,23 +212,45 @@
             height: 6px; border-radius: 3px; position: relative;
             transform-origin: left;
         }
-        .path-bar::before, .path-bar::after { /* Nodes at start and end */
+        .path-bar::before, .path-bar::after {
             content: ''; position: absolute; top: 50%; transform: translateY(-50%);
             width: 16px; height: 16px; border-radius: 50%;
         }
         .path-bar::before { left: -8px; }
         .path-bar::after { right: -8px; }
-
-        #expected-path-bar {
-            width: 90%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-        }
+        #expected-path-bar { width: 90%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
         #expected-path-bar::before, #expected-path-bar::after { background-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
-
-        #actual-path-bar {
-            width: 8%; background: linear-gradient(90deg, var(--accent-magenta), var(--accent-danger));
-        }
+        #actual-path-bar { width: 8%; background: linear-gradient(90deg, var(--accent-magenta), var(--accent-danger)); }
         #actual-path-bar::before, #actual-path-bar::after { background-color: var(--accent-magenta); box-shadow: 0 0 10px var(--accent-magenta); }
-        #actual-path-bar::after { animation: blink 1.5s infinite; } /* Flickering end node */
+        #actual-path-bar::after { animation: blink 1.5s infinite; }
+
+        /* ========== RULES SECTION ========== */
+        .rules-details {
+            max-width: 800px; margin: 0 auto; background-color: var(--bg-secondary);
+            border: 1px solid var(--bg-tertiary); border-radius: 12px;
+        }
+        .rules-details summary {
+            font-size: 1.25rem; font-weight: 600; padding: var(--space-lg);
+            cursor: pointer; color: var(--text-primary); list-style: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .rules-details summary::-webkit-details-marker { display: none; }
+        .rules-details summary::after { /* Custom dropdown arrow */
+            content: '+'; font-size: 2rem; color: var(--accent-blue);
+            transition: transform var(--transition-normal);
+        }
+        .rules-details[open] summary::after { transform: rotate(45deg); }
+        .rules-content { padding: 0 var(--space-lg) var(--space-lg); }
+        .rules-content ul { list-style: none; }
+        .rules-content li {
+            padding-left: 1.5rem; position: relative; margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        .rules-content li::before {
+            content: '✓'; position: absolute; left: 0; color: var(--accent-success);
+            font-weight: bold;
+        }
+        .rules-content li strong { color: var(--text-primary); }
 
         /* ========== PROFILE MODAL ========== */
         #profile-modal {
@@ -332,7 +365,7 @@
         @media (max-width: 768px) {
             section { padding: var(--space-lg) var(--space-md); }
             .dashboard { grid-template-columns: 1fr; }
-            #terminal { display: none; } /* Hide terminal on small screens to save space */
+            #terminal { display: none; }
             .glitch-text { font-size: 2.5rem; }
         }
     </style>
@@ -351,6 +384,17 @@
         </div>
         <div class="hero-backdrop"></div>
         <div class="hero-grid"></div>
+    </section>
+
+    <!-- About LFS Section -->
+    <section id="about-lfs">
+        <div class="section-header">
+            <h2>About The Arena</h2>
+        </div>
+        <div class="about-content">
+            <p>The challenge is based on <strong>Linux From Scratch (LFS)</strong>, a project that provides instructions for building your own custom Linux system entirely from source code. It is a rigorous, educational, and often soul-crushing journey through the depths of system compilation and configuration.</p>
+            <a href="https://www.linuxfromscratch.org/lfs/" target="_blank" class="cta-button">Read The Sacred Texts</a>
+        </div>
     </section>
 
     <!-- Terminal Widget -->
@@ -396,6 +440,25 @@
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section id="rules">
+        <div class="section-header">
+            <h2>Articles of Competition</h2>
+        </div>
+        <details class="rules-details">
+            <summary>Click to view the official rules</summary>
+            <div class="rules-content">
+                <ul>
+                    <li><strong>Individual Merit:</strong> This is a solo competition. No collaboration, scripts, or external solutions for LFS-specific errors are permitted.</li>
+                    <li><strong>The Arena:</strong> The build must be performed on a physical partition of the participant's own machine. Virtual Machines are for the weak and are strictly forbidden.</li>
+                    <li><strong>Absolute Risk:</strong> Participants accept all risks, including catastrophic data loss and declining sanity. The organizer is not responsible for any damage, physical or emotional.</li>
+                    <li><strong>The Verification Protocol:</strong> To claim victory, a participant must pass a live, in-person audit, including a cold boot, system demonstration, and a technical interrogation.</li>
+                    <li><strong>Final Judgment:</strong> The organizer's ruling on all matters is absolute, final, and not open to debate.</li>
+                </ul>
+            </div>
+        </details>
     </section>
 
     <!-- Hidden Kernel Panic Trigger -->
@@ -510,7 +573,7 @@
                 gsap.from("#terminal", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 1.5 });
                 gsap.to(".hero-grid", { rotationX: 40, duration: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
 
-                const sections = ['#leaderboard', '#progress', '#easter-egg-section', 'footer'];
+                const sections = ['#about-lfs', '#leaderboard', '#progress', '#rules', '#easter-egg-section', 'footer'];
                 sections.forEach(sec => {
                     gsap.from(sec, {
                         opacity: 0, y: 30, duration: 1,
@@ -526,7 +589,6 @@
                     });
                 });
                 
-                // Animate the corrected progress path bars on scroll
                 gsap.from("#expected-path-bar", {
                     scaleX: 0, duration: 1.5, ease: "power2.inOut",
                     scrollTrigger: { trigger: "#progress", start: "top 80%" }
