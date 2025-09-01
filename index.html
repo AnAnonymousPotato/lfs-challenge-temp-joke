@@ -20,6 +20,7 @@
             --bg-tertiary: #1f2937;
             --text-primary: #f9fafb;
             --text-secondary: #9ca3af;
+            --text-tertiary: #4b5563;
             --accent-blue: #0ea5e9;
             --accent-purple: #8b5cf6;
             --accent-magenta: #ec4899;
@@ -100,7 +101,14 @@
         }
         .hero-subtitle {
             font-size: clamp(1rem, 3vw, 1.5rem); color: var(--text-secondary);
-            margin-bottom: var(--space-lg); letter-spacing: 2px;
+            margin-bottom: 1rem; letter-spacing: 2px;
+        }
+        .hero-organizer { /* New style for organizer */
+            font-size: 1rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+            letter-spacing: 1px;
         }
         .prize-amount {
             font-size: clamp(2rem, 6vw, 4rem); font-weight: 700; font-family: var(--font-mono);
@@ -282,6 +290,24 @@
         .reboot-message { font-size: 1rem; color: var(--text-primary); margin-top: var(--space-lg); font-family: var(--font-mono); }
         #countdown { font-weight: 700; color: var(--accent-danger); }
 
+        /* ========== FOOTER & DISCLAIMER ========== */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) var(--space-md);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .disclaimer {
+            font-size: 0.875rem;
+            max-width: 600px;
+            margin: 0 auto 1rem auto;
+            color: var(--text-tertiary);
+        }
+        .credit {
+            font-size: 0.875rem;
+            font-family: var(--font-mono);
+        }
+
         /* ========== RESPONSIVE STYLES ========== */
         @media (max-width: 768px) {
             section { padding: var(--space-lg) var(--space-md); }
@@ -299,6 +325,7 @@
             <div class="hero-badge">ULTRA PREMIUM EVENT</div>
             <h1 class="hero-title">THE LFS GRANDMASTER CHALLENGE</h1>
             <h2 class="hero-subtitle">WHERE LEGENDS ARE FORGED. WHERE KERNELS ARE COMPILED.</h2>
+            <p class="hero-organizer">Organized by Anirudh Gupta</p>
             <div class="prize-amount">$1,000,000</div>
             <p class="hero-description">The ultimate test of technical prowess and psychological endurance.</p>
         </div>
@@ -387,6 +414,12 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <p class="disclaimer">Disclaimer: This website is a satirical project created for fun. The challenge is fictional, and the prize money is, unfortunately, not real.</p>
+        <p class="credit">A Joke by Anirudh Gupta</p>
+    </footer>
+
     <script>
         // Store participant data in a single, reliable source of truth.
         const participants = [
@@ -445,18 +478,15 @@
 
             // --- ANIMATION & EVENT BINDING ---
             function initAnimations() {
-                // Fade in body
                 document.body.classList.add('loaded');
 
-                // Hero Animations
-                gsap.from(".hero-badge, .hero-title, .hero-subtitle, .prize-amount, .hero-description", {
-                    opacity: 0, y: 20, duration: 0.8, stagger: 0.2, ease: "power3.out", delay: 0.5
+                gsap.from(".hero-badge, .hero-title, .hero-subtitle, .hero-organizer, .prize-amount, .hero-description", {
+                    opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.5
                 });
                 gsap.from("#terminal", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 1.5 });
                 gsap.to(".hero-grid", { rotationX: 40, duration: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
 
-                // Animate elements on scroll
-                const sections = ['#leaderboard', '#progress', '#easter-egg-section'];
+                const sections = ['#leaderboard', '#progress', '#easter-egg-section', 'footer'];
                 sections.forEach(sec => {
                     gsap.from(sec, {
                         opacity: 0, y: 30, duration: 1,
@@ -464,7 +494,6 @@
                     });
                 });
 
-                // Animate progress bars
                 document.querySelectorAll('.participant-card').forEach((card, index) => {
                     const bar = card.querySelector('.progress-bar');
                     gsap.to(bar, {
