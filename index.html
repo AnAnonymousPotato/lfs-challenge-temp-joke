@@ -189,16 +189,35 @@
         .status-text { font-size: 0.75rem; font-family: var(--font-mono); }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* ========== PROGRESS VISUALIZATION ========== */
+        /* ========== PROGRESS VISUALIZATION (Corrected) ========== */
         .progress-container { display: flex; flex-direction: column; gap: var(--space-xl); margin-top: var(--space-xl); }
         .path-label { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; font-family: var(--font-mono); letter-spacing: 1px; }
-        .path-visualization { height: 120px; position: relative; background-color: var(--bg-secondary); border-radius: 8px; overflow: hidden; }
-        .path-node { position: absolute; width: 16px; height: 16px; border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; }
-        .path-line { position: absolute; height: 3px; transform-origin: left center; z-index: 1; }
-        .expected-path .path-node { background-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
-        .expected-path .path-line { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
-        .actual-path .path-node { background-color: var(--accent-magenta); box-shadow: 0 0 10px var(--accent-magenta); }
-        .actual-path .path-line { background: linear-gradient(90deg, var(--accent-magenta), var(--accent-danger)); }
+        .path-visualization {
+            height: 40px; position: relative; background-color: var(--bg-secondary);
+            border-radius: 8px; padding: 10px; display: flex; align-items: center;
+            border: 1px solid var(--bg-tertiary);
+        }
+        .path-bar {
+            height: 6px; border-radius: 3px; position: relative;
+            transform-origin: left;
+        }
+        .path-bar::before, .path-bar::after { /* Nodes at start and end */
+            content: ''; position: absolute; top: 50%; transform: translateY(-50%);
+            width: 16px; height: 16px; border-radius: 50%;
+        }
+        .path-bar::before { left: -8px; }
+        .path-bar::after { right: -8px; }
+
+        #expected-path-bar {
+            width: 90%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        }
+        #expected-path-bar::before, #expected-path-bar::after { background-color: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
+
+        #actual-path-bar {
+            width: 8%; background: linear-gradient(90deg, var(--accent-magenta), var(--accent-danger));
+        }
+        #actual-path-bar::before, #actual-path-bar::after { background-color: var(--accent-magenta); box-shadow: 0 0 10px var(--accent-magenta); }
+        #actual-path-bar::after { animation: blink 1.5s infinite; } /* Flickering end node */
 
         /* ========== PROFILE MODAL ========== */
         #profile-modal {
@@ -366,11 +385,15 @@
         <div class="progress-container">
             <div class="expected-path">
                 <div class="path-label">EXPECTED PATH</div>
-                <div class="path-visualization"></div>
+                <div class="path-visualization">
+                    <div class="path-bar" id="expected-path-bar"></div>
+                </div>
             </div>
             <div class="actual-path">
                 <div class="path-label">ACTUAL PROGRESS</div>
-                <div class="path-visualization"></div>
+                <div class="path-visualization">
+                    <div class="path-bar" id="actual-path-bar"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -438,7 +461,7 @@
             // --- RENDER FUNCTIONS ---
             function renderLeaderboard() {
                 const dashboard = document.querySelector('.dashboard');
-                dashboard.innerHTML = ''; // Clear existing content
+                dashboard.innerHTML = '';
                 participants.forEach((p, index) => {
                     const statusClass = p.status;
                     const card = document.createElement('div');
@@ -501,6 +524,16 @@
                         width: `${participants[index].progressPercent}%`,
                         scrollTrigger: { trigger: card, start: "top 85%" }
                     });
+                });
+                
+                // Animate the corrected progress path bars on scroll
+                gsap.from("#expected-path-bar", {
+                    scaleX: 0, duration: 1.5, ease: "power2.inOut",
+                    scrollTrigger: { trigger: "#progress", start: "top 80%" }
+                });
+                gsap.from("#actual-path-bar", {
+                    scaleX: 0, duration: 1, ease: "power2.inOut",
+                    scrollTrigger: { trigger: "#progress", start: "top 80%" }
                 });
             }
 
