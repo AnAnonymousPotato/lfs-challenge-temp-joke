@@ -7,7 +7,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -55,12 +55,14 @@
             display: flex; align-items: center; margin-bottom: var(--space-lg);
         }
         .section-header h2 {
+            font-family: var(--font-mono);
             font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
             margin-right: var(--space-md); position: relative;
+            display: inline-block;
         }
         .section-header h2::after {
             content: ''; position: absolute; bottom: -8px; left: 0;
-            width: 60px; height: 3px;
+            width: 100%; height: 3px;
             background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
         }
 
@@ -87,6 +89,7 @@
             border: 1px solid var(--text-tertiary);
         }
         .hero-title {
+            font-family: var(--font-mono);
             font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; letter-spacing: -2px;
             margin-bottom: var(--space-md);
             background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
@@ -118,11 +121,19 @@
             transform: rotateX(45deg) scale(2); opacity: 0.2; z-index: 0;
         }
 
-        /* ========== ABOUT LFS (Live Terminal Briefing) ========== */
+        /* ========== ABOUT LFS (REDESIGNED) ========== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-lg);
+            align-items: start;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
         .briefing-terminal {
             background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
-            padding: var(--space-lg); border-radius: 12px; max-width: 800px; margin: 0 auto;
-            font-family: var(--font-mono);
+            padding: var(--space-lg); border-radius: 12px;
+            font-family: var(--font-mono); height: 100%;
         }
         .briefing-terminal .line { display: block; margin-bottom: 0.5rem; line-height: 1.5; }
         .briefing-terminal .command { color: var(--accent-success); }
@@ -144,6 +155,16 @@
             width: 10px; height: 1em; vertical-align: middle; margin-left: 5px;
             animation: typing 1s infinite;
         }
+        .artifact-analysis {
+            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
+            padding: var(--space-lg); border-radius: 12px; font-family: var(--font-mono);
+            height: 100%;
+        }
+        .artifact-analysis h3 { color: var(--accent-purple); margin-bottom: 1.5rem; }
+        .artifact-prop { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px dashed var(--bg-tertiary); padding-bottom: 1rem; font-size: 0.9rem; }
+        .artifact-prop-label { color: var(--text-secondary); }
+        .artifact-prop-value { color: var(--text-primary); font-weight: bold; }
+        .artifact-prop-value.warning { color: var(--accent-warning); }
         
         /* ========== INTERACTIVE TERMINAL & LEADERBOARD ========== */
         #terminal {
@@ -159,7 +180,8 @@
         .terminal-buttons span:nth-child(3) { background-color: var(--accent-success); }
         .terminal-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
         .terminal-body { padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; height: calc(100% - 28px); overflow-y: auto; }
-        #terminal-output { white-space: pre-wrap; word-break: break-all; }
+        #terminal-output .line { margin-bottom: 4px; }
+        #terminal-output .typing { animation: typing 1s infinite; }
         @keyframes typing { 50% { opacity: 0; } }
 
         .dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: var(--space-lg); }
@@ -170,7 +192,7 @@
         }
         .participant-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
         .participant-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7; }
-        .participant-name { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .participant-name { font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 0.5rem; }
         .last-transmission { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); border-left: 2px solid var(--text-tertiary); padding-left: 0.5rem; margin-top: 1rem; font-style: italic; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
         .detail-label { color: var(--text-secondary); font-size: 0.875rem; }
@@ -209,6 +231,7 @@
         .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); }
         .faq-details:hover { border-color: var(--accent-purple); }
         .faq-details summary {
+            font-family: var(--font-mono);
             font-size: 1.1rem; font-weight: 600; padding: 1.5rem; cursor: pointer;
             color: var(--text-primary); list-style: none; display: flex;
             justify-content: space-between; align-items: center;
@@ -226,40 +249,65 @@
         /* ========== RULES MODAL ========== */
         #rules-trigger { display: block; margin: 0 auto; font-family: var(--font-mono); font-size: 1rem; padding: 1rem 2rem; border-radius: 8px; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; transition: all var(--transition-normal); }
         #rules-trigger:hover { background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); }
-        #rules-modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
-        #rules-modal.visible { opacity: 1; pointer-events: all; }
-        .rules-modal-content { background-color: var(--bg-primary); border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
-        #rules-modal.visible .rules-modal-content { transform: scale(1); }
-        .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); }
+        .modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
+        .modal.visible { opacity: 1; pointer-events: all; }
+        .modal-content { background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal); }
+        .modal.visible .modal-content { transform: scale(1); }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; z-index: 2;}
+        .modal-close:hover { background-color: var(--accent-danger); transform: rotate(90deg); }
+        .rules-modal-content { max-width: 800px; background-color: var(--bg-primary); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
+        .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); position: relative;}
         .rules-modal-header h3 { font-family: var(--font-mono); color: var(--accent-blue); }
         .rules-modal-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); }
-        .rules-modal-body { padding: 1.5rem; }
+        .rules-modal-body { padding: 1.5rem; overflow-y: auto; }
         .rules-modal-body h4 { font-size: 1.1rem; color: var(--accent-purple); margin: 1.5rem 0 0.5rem 0; }
         .rules-modal-body p { color: var(--text-secondary); margin-bottom: 1rem; }
-        .rules-modal-footer { padding: 1.5rem; text-align: right; border-top: 1px solid var(--bg-tertiary); }
-        .rules-modal-close { font-family: var(--font-mono); padding: 0.75rem 1.5rem; border-radius: 8px; background-color: var(--accent-blue); color: var(--text-primary); border: none; cursor: pointer; transition: all var(--transition-normal); }
-        .rules-modal-close:hover { background-color: var(--accent-purple); }
         
-        /* ========== PROFILE MODAL & KERNEL PANIC ========== */
-        #profile-modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
-        #profile-modal.visible { opacity: 1; pointer-events: all; }
-        .modal-content { background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; padding: var(--space-lg); border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.95); transition: transform var(--transition-normal); }
-        #profile-modal.visible .modal-content { transform: scale(1); }
-        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; }
-        .modal-close:hover { background-color: var(--accent-danger); }
+        /* ========== PROFILE MODAL SPECIFICS ========== */
+        .profile-modal-content { max-width: 700px; padding: var(--space-xl); }
         .profile-header { display: flex; align-items: center; margin-bottom: var(--space-lg); }
         .profile-avatar { width: 80px; height: 80px; border-radius: 12px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
         .psych-status { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-warning); margin-top: 0.5rem; border-left: 2px solid var(--accent-warning); padding-left: 0.5rem; }
         .profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: var(--space-lg); }
         .stat-card { background-color: var(--bg-tertiary); padding: 0.5rem; border-radius: 8px; text-align: center; }
         
-        #kernel-panic-trigger { color: var(--accent-danger); cursor: pointer; transition: all 0.2s ease; display: inline-block; font-weight: bold; }
-        #kernel-panic-trigger:hover { text-shadow: 0 0 15px var(--accent-danger); transform: scale(1.05); }
+        /* ========== SYSTEM INTEGRITY (RESTORED) ========== */
+        .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .status-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-family: var(--font-mono); letter-spacing: 1px; }
+        .status-value { font-size: 1rem; font-weight: 600; font-family: var(--font-mono); }
+        #kernel-panic-trigger {
+            color: var(--accent-danger); cursor: pointer; transition: all 0.2s ease;
+            display: inline-block; font-weight: bold;
+        }
+        #kernel-panic-trigger:hover {
+            text-shadow: 0 0 15px var(--accent-danger);
+            transform: scale(1.05);
+        }
         #kernel-panic-trigger .bracket { transition: all 0.2s ease; display: inline-block; }
         #kernel-panic-trigger:hover .bracket { transform: scaleX(1.5); }
         #kernel-panic { position: fixed; inset: 0; background-color: #000; z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; opacity: 0; transition: opacity 0.2s ease; }
         #kernel-panic.active { opacity: 1; pointer-events: all; }
-        
+        .panic-content { max-width: 800px; padding: var(--space-lg); text-align: center; }
+        .glitch-text {
+            font-size: 4rem; font-weight: 700; font-family: var(--font-mono);
+            color: var(--text-primary); text-transform: uppercase;
+            margin-bottom: var(--space-lg); position: relative;
+            animation: glitch-color-bleed 2s infinite;
+        }
+        @keyframes glitch-color-bleed {
+            0% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
+            33% { text-shadow: -2px 2px var(--accent-magenta), 2px -2px var(--accent-blue); }
+            66% { text-shadow: 2px -2px var(--accent-magenta), -2px 2px var(--accent-blue); }
+            100% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
+        }
+        .error-details {
+            font-family: var(--font-mono); text-align: left; margin-bottom: var(--space-lg);
+            border: 1px solid var(--accent-danger); padding: 1rem; background-color: rgba(239, 68, 68, 0.1); border-radius: 4px;
+        }
+        .reboot-message { font-size: 1rem; margin-top: var(--space-lg); font-family: var(--font-mono); }
+        #countdown { font-weight: 700; color: var(--accent-danger); }
+
         /* ========== FOOTER & DISCLAIMER ========== */
         footer { text-align: center; padding: var(--space-lg) var(--space-md); border-top: 1px solid var(--border-color); color: var(--text-secondary); }
         .disclaimer { font-size: 0.875rem; max-width: 700px; margin: 0 auto 1.5rem auto; color: var(--text-tertiary); line-height: 1.5; }
@@ -268,7 +316,7 @@
         /* ========== RESPONSIVE STYLES ========== */
         @media (max-width: 768px) {
             section { padding: var(--space-lg) var(--space-md); }
-            .dashboard, .sponsors-grid { grid-template-columns: 1fr; }
+            .dashboard, .sponsors-grid, .about-grid { grid-template-columns: 1fr; }
             #terminal { display: none; }
         }
     </style>
@@ -282,7 +330,7 @@
             <h1 class="hero-title">THE GRANDMASTER SANCTION</h1>
             <p class="hero-organizer">Organized by Anirudh Gupta</p>
             <div class="prize-amount" data-terminal-info="WARNING: Prize is a theoretical construct.">$1,000,000<a href="#fine-print" class="prize-asterisk">*</a></div>
-            <p class="hero-description">The ultimate test of technical prowess and psychological endurance.</p>
+            <p class="hero-description">The ultimate test of technical prowess and psychological endurance, forged in the fires of Linux From Scratch.</p>
         </div>
         <div class="hero-backdrop"></div>
         <div class="hero-grid"></div>
@@ -293,8 +341,29 @@
         <div class="section-header">
             <h2>About The Arena</h2>
         </div>
-        <div class="briefing-terminal" id="briefing-terminal">
-            <!-- Populated by JavaScript -->
+        <div class="about-grid">
+            <div class="briefing-terminal" id="briefing-terminal">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="artifact-analysis">
+                <h3>[ ARTIFACT ANALYSIS: LFS-DOC-V11.3 ]</h3>
+                <div class="artifact-prop">
+                    <span class="artifact-prop-label">Pages</span>
+                    <span class="artifact-prop-value">468 (See Appendix B for corrections)</span>
+                </div>
+                <div class="artifact-prop">
+                    <span class="artifact-prop-label">Complexity Index</span>
+                    <span class="artifact-prop-value">Esoteric</span>
+                </div>
+                <div class="artifact-prop">
+                    <span class="artifact-prop-label">Known Side Effects</span>
+                    <span class="artifact-prop-value warning">Spontaneous weeping, questioning of life choices</span>
+                </div>
+                <div class="artifact-prop">
+                    <span class="artifact-prop-label">Compiler Requirement</span>
+                    <span class="artifact-prop-value">GCC (and the user's soul)</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -302,10 +371,12 @@
     <div id="terminal">
         <div class="terminal-header">
             <div class="terminal-buttons"><span></span><span></span><span></span></div>
-            <div class="terminal-title">sys.monitor</div>
+            <div class="terminal-title">lfs-challenge.sh</div>
         </div>
         <div class="terminal-body">
-            <pre id="terminal-output">Monitoring user activity...</pre>
+            <div id="terminal-output">
+                <!-- Populated by JavaScript -->
+            </div>
         </div>
     </div>
 
@@ -387,16 +458,17 @@
     </section>
 
     <!-- Participant Profiles Modal -->
-    <div id="profile-modal" style="display: none;">
-        <div class="modal-content">
+    <div id="profile-modal" class="modal">
+        <div class="modal-content profile-modal-content">
             <div class="modal-close">×</div>
             <div class="profile-data-container"></div>
         </div>
     </div>
     
     <!-- Rules Modal -->
-    <div id="rules-modal" style="display: none;">
-        <div class="rules-modal-content">
+    <div id="rules-modal" class="modal">
+        <div class="modal-content rules-modal-content">
+            <div class="modal-close">×</div>
             <div class="rules-modal-header">
                 <h3>ARTICLES OF COMPETITION</h3>
                 <p>DOCUMENT ID: LFSGC-7.9 // CLASSIFICATION: PUBLIC</p>
@@ -404,32 +476,30 @@
             <div class="rules-modal-body">
                 <h4>PREAMBLE</h4>
                 <p>This document outlines the irrevocable and non-negotiable statutes governing The Grandmaster Sanction. Participation constitutes unconditional acceptance of these terms. Ignorance of any article herein does not excuse non-compliance.</p>
-                
                 <h4>ARTICLE I: SOVEREIGNTY OF EFFORT</h4>
-                <p>The Participant shall undertake this challenge in absolute solitude. No collaboration, consultation, or use of pre-written scripts, build automators, or AI assistance beyond basic syntax reference is permitted. The Participant's sanity, or lack thereof, must be entirely their own.</p>
-                
+                <p>The Participant shall undertake this challenge in absolute solitude. No collaboration, consultation, or use of pre-written scripts is permitted. The Participant's sanity, or lack thereof, must be entirely their own.</p>
                 <h4>ARTICLE II: THE ARENA</h4>
-                <p>The build must be performed on a physical partition of the Participant's own machine. Virtual Machines, containers, and any form of abstraction designed to protect the user from the consequences of their actions are expressly forbidden. True masters face reality.</p>
-
+                <p>The build must be on a physical partition. Virtual Machines, containers, and any form of abstraction designed to protect the user from consequences are expressly forbidden. True masters face reality.</p>
                 <h4>ARTICLE III: ACCEPTANCE OF RISK</h4>
-                <p>The Participant acknowledges that this endeavor carries inherent risks, including but not limited to: catastrophic data loss, hardware damage, sleep deprivation, strained personal relationships, and the development of a profound, philosophical hatred for compilers. The organizer assumes zero liability.</p>
-
+                <p>The Participant acknowledges inherent risks, including: data loss, hardware damage, sleep deprivation, and a profound hatred for compilers. The organizer assumes zero liability.</p>
                 <h4>ARTICLE IV: THE VERIFICATION PROTOCOL</h4>
-                <p>To claim victory, a Participant must submit to a live, in-person audit. This 'Judgment Day' will include a cold boot into the LFS system, a demonstration of core functionality, and a technical interrogation by the organizer, whose questions may be deliberately obtuse. Failure to adequately explain one's own work is grounds for immediate disqualification.</p>
-                
+                <p>To claim victory, a Participant must submit to a live audit including a cold boot, system demonstration, and a technical interrogation. Failure to explain one's own work is grounds for disqualification.</p>
                 <h4>ARTICLE V: THE FINALITY CLAUSE</h4>
-                <p>The organizer's judgment on all matters, from rule interpretation to the verification of success, is final, absolute, and not subject to appeal, review, or complaint. All decisions are rendered ex cathedra.</p>
-            </div>
-            <div class="rules-modal-footer">
-                <button class="rules-modal-close modal-close">[ ACKNOWLEDGE & CLOSE ]</button>
+                <p>The organizer's judgment on all matters is final, absolute, and not subject to appeal, review, or complaint.</p>
             </div>
         </div>
     </div>
 
     <!-- Kernel Panic Screen (initially hidden) -->
-    <div id="kernel-panic" style="display: none;">
+    <div id="kernel-panic">
         <div class="panic-content">
-            <!-- Content for kernel panic screen -->
+            <div class="glitch-text" data-text="KERNEL PANIC">KERNEL PANIC</div>
+            <div class="error-details">
+                <p>CRITICAL FAILURE: Participant motivation not found</p>
+                <p>at Object.compile (motivation.js:404)</p>
+                <p>at LifeChoices.makeGoodDecisions (dreams.js:0)</p>
+            </div>
+            <div class="reboot-message">SYSTEM WILL REBOOT IN <span id="countdown">5</span></div>
         </div>
     </div>
 
@@ -477,20 +547,17 @@
 
             function renderProfileModal(participant) {
                 const container = document.getElementById('profile-modal');
-                container.innerHTML = `
-                    <div class="modal-content">
-                        <div class="modal-close">×</div>
-                        <div class="profile-header">
-                            <div class="profile-avatar">${participant.profile.avatar}</div>
-                            <div class="profile-title">
-                                <h3 class="participant-name">${participant.name}</h3>
-                                <p class="profile-bio">${participant.profile.bio}</p>
-                                <div class="psych-status">// PSYCH_EVAL: ${participant.psychStatus}</div>
-                            </div>
+                container.querySelector('.profile-data-container').innerHTML = `
+                    <div class="profile-header">
+                        <div class="profile-avatar">${participant.profile.avatar}</div>
+                        <div class="profile-title">
+                            <h3 class="participant-name">${participant.name}</h3>
+                            <p class="profile-bio">${participant.profile.bio}</p>
+                            <div class="psych-status">// PSYCH_EVAL: ${participant.psychStatus}</div>
                         </div>
-                        <div class="profile-stats">
-                            ${participant.profile.stats.map(stat => `<div class="stat-card"><h4 class="stat-value">${stat.value}</h4><p class="stat-label">${stat.label}</p></div>`).join('')}
-                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        ${participant.profile.stats.map(stat => `<div class="stat-card"><h4 class="stat-value">${stat.value}</h4><p class="stat-label">${stat.label}</p></div>`).join('')}
                     </div>
                 `;
             }
@@ -533,25 +600,33 @@
                     }
                 }
             }
-
-            function initInteractiveTerminal() {
-                const terminalOutput = document.getElementById('terminal-output');
-                let defaultText = "Monitoring user activity...";
-                const terminalMessages = [ "Checking for signs of life...", "WARNING: None found.", "Running motivation.sh...", "ERROR: Script failed.", "Re-evaluating life choices...", ];
-                let msgIndex = 0;
-                setInterval(() => {
-                    if (document.querySelector('#terminal:hover') === null) {
-                         terminalOutput.textContent = terminalMessages[msgIndex];
-                         msgIndex = (msgIndex + 1) % terminalMessages.length;
-                    }
-                }, 4000);
-                
-                document.querySelectorAll('[data-terminal-info]').forEach(el => {
-                    el.addEventListener('mouseenter', () => { terminalOutput.textContent = el.dataset.terminalInfo; });
-                    el.addEventListener('mouseleave', () => { terminalOutput.textContent = defaultText; });
-                });
-            }
             
+            function initTerminal() {
+                const terminalBody = document.getElementById('terminal-output');
+                const messages = [
+                    {text: "Checking for signs of life..."},
+                    {text: "> WARNING: None found.", delay: 1500},
+                    {text: "Running motivation.sh...", delay: 3000},
+                    {text: "> ERROR: Script failed. Exit code 1.", delay: 1500},
+                    {text: "Re-evaluating life choices...", delay: 2500}
+                ];
+                let msgIndex = 0;
+                
+                function typeMessage() {
+                    const line = document.createElement('div');
+                    line.className = 'line';
+                    line.textContent = messages[msgIndex].text;
+                    terminalBody.innerHTML = '';
+                    terminalBody.appendChild(line);
+                    
+                    const currentDelay = messages[msgIndex].delay || 2000;
+                    msgIndex = (msgIndex + 1) % messages.length;
+                    
+                    setTimeout(typeMessage, currentDelay);
+                }
+                setTimeout(typeMessage, 2000);
+            }
+
             function initModals() {
                 const profileModal = document.getElementById('profile-modal');
                 const rulesModal = document.getElementById('rules-modal');
@@ -577,7 +652,7 @@
                 // Generic close logic for all modals
                 document.body.addEventListener('click', (e) => {
                     if (e.target.matches('.modal-close')) {
-                        const modal = e.target.closest('#profile-modal, #rules-modal');
+                        const modal = e.target.closest('.modal');
                         modal.classList.remove('visible');
                         setTimeout(() => { modal.style.display = 'none' }, 300);
                         document.body.style.overflow = '';
@@ -588,10 +663,42 @@
             function initKernelPanic() {
                 const trigger = document.getElementById('kernel-panic-trigger');
                 const panicScreen = document.getElementById('kernel-panic');
+                const glitchText = panicScreen.querySelector('.glitch-text');
+
                 trigger.addEventListener('click', () => {
                     panicScreen.style.display = 'flex';
                     setTimeout(() => panicScreen.classList.add('active'), 10);
-                    // This part would contain the countdown and reload logic
+                    
+                    // Glitch animation
+                    const originalText = glitchText.dataset.text;
+                    const chars = "!<>-_\\/[]{}—=+*^?#";
+                    let interval = null;
+                    
+                    const scramble = () => {
+                        glitchText.textContent = originalText
+                            .split("")
+                            .map(letter => (Math.random() > 0.7) ? chars[Math.floor(Math.random() * chars.length)] : letter)
+                            .join("");
+                    };
+                    
+                    interval = setInterval(scramble, 50);
+                    setTimeout(() => {
+                        clearInterval(interval);
+                        glitchText.textContent = originalText;
+                    }, 1000);
+
+                    // Countdown
+                    let countdown = 5;
+                    const countdownEl = document.getElementById('countdown');
+                    countdownEl.textContent = countdown;
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        countdownEl.textContent = countdown;
+                        if (countdown <= 0) {
+                            clearInterval(countdownInterval);
+                            window.location.reload();
+                        }
+                    }, 1000);
                 });
             }
             
@@ -599,7 +706,7 @@
             renderLeaderboard();
             initAnimations();
             typeOutBriefing();
-            initInteractiveTerminal();
+            initTerminal();
             initModals();
             initKernelPanic();
         });
