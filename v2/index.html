@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From Scratch Invitational — LFS Micro‑Challenge</title>
+  <meta name="description" content="A friendly, just-for-fun micro-challenge inspired by Linux From Scratch (LFS). Learn what LFS is, see the (fictional) friendboard, and check the protocol." />
+  <meta property="og:title" content="From Scratch Invitational" />
+  <meta property="og:description" content="A friendly, just-for-fun micro-challenge inspired by Linux From Scratch (LFS)." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0b1220" />
+
+  <!-- Favicon: gradient + FS -->
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="%230ea5e9"/><stop offset="1" stop-color="%238b5cf6"/></linearGradient></defs><rect width="64" height="64" rx="12" fill="url(%23g)"/><text x="50%" y="56%" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="28" fill="white">FS</text></svg>' />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Initial theme (respect system) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      const sys = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const theme = saved || sys;
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.replace('no-js', 'js');
+    })();
+  </script>
+
+  <style>
+    :root{
+      --accent:#4ea2ff;
+      --accent-2:#8b5cf6;
+      --font-sans:'Inter',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;
+      --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+      --xs:.5rem; --sm:.75rem; --md:1rem; --lg:2rem; --xl:4rem;
+      --radius:12px; --ease:cubic-bezier(.2,.8,.2,1);
+    }
+    [data-theme="dark"]{
+      color-scheme:dark;
+      --bg:#0b1220; --bg-soft:#0f172a; --surface:#111a2e; --card:#0f1a30;
+      --border:#20314b; --text:#e6eefc; --muted:#a7b1c5;
+      --shadow:0 24px 50px rgba(0,0,0,.35);
+      --grid:rgba(255,255,255,.05);
+    }
+    [data-theme="light"]{
+      color-scheme:light;
+      --bg:#f7f9ff; --bg-soft:#eef3ff; --surface:#ffffff; --card:#ffffff;
+      --border:#d7e1f3; --text:#0b1220; --muted:#3a4a6a;
+      --shadow:0 20px 46px rgba(11,18,32,.10);
+      --grid:rgba(0,0,0,.06);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.6}
+    .container{max-width:1100px;margin:0 auto;padding:0 var(--lg)}
+
+    header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);
+      background:color-mix(in oklab,var(--bg) 82%, transparent);
+      border-bottom:1px solid var(--border)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:var(--md) 0;gap:var(--md)}
+    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.5px}
+    .brand-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:grid;place-items:center;font-family:var(--font-mono);font-size:.8rem;color:#fff;box-shadow:var(--shadow)}
+    .links{display:flex;gap:.6rem;flex-wrap:wrap}
+    .links a{color:var(--muted);text-decoration:none;padding:.35rem .6rem;border-radius:8px;border:1px solid transparent;
+      transition:color .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease)}
+    .links a:hover{color:var(--text);background:color-mix(in oklab,var(--surface) 72%, transparent);border-color:var(--border)}
+
+    .theme-toggle{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);background:var(--surface);
+      color:var(--text);border-radius:999px;padding:.35rem .6rem;cursor:pointer;font-family:var(--font-mono);font-size:.85rem;
+      box-shadow:var(--shadow)}
+    .theme-toggle .dot{width:18px;height:18px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,#fff,color-mix(in oklab,var(--accent) 60%, #fff) 60%,var(--accent));
+      box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 30%, transparent);transition:transform .25s var(--ease)}
+    .theme-toggle:active .dot{transform:scale(.9)}
+
+    /* HERO */
+    .hero{position:relative;overflow:hidden;background:
+      radial-gradient(60% 60% at 20% 30%,color-mix(in oklab,var(--accent) 12%,transparent),transparent),
+      radial-gradient(60% 60% at 80% 20%,color-mix(in oklab,var(--accent-2) 12%,transparent),transparent)}
+    .grid-bg{position:absolute;inset:0;opacity:.18;pointer-events:none;background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+      background-size:50px 50px;transform:perspective(800px) rotateX(45deg) scale(2)}
+    .hero-inner{padding:calc(var(--xl) + 1.2rem) 0 var(--lg);display:grid;gap:.75rem;text-align:center}
+    .eyebrow{display:inline-block;font-family:var(--font-mono);color:var(--muted);
+      padding:.35rem .6rem;border-radius:999px;border:1px dashed var(--border);
+      background:color-mix(in oklab,var(--bg-soft) 68%, transparent)}
+    .org{font-family:var(--font-mono);color:var(--muted);margin-top:.2rem}
+    .title{font-family:var(--font-mono);font-size:clamp(2.2rem,6.2vw,4.8rem);line-height:1.1;letter-spacing:-0.5px;margin:.1rem 0}
+    [data-theme="dark"] .title{
+      background:linear-gradient(90deg,#fff,color-mix(in oklab,var(--text) 70%, var(--muted)));
+      -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 20px rgba(78,162,255,.18)}
+    [data-theme="light"] .title{color:var(--text);text-shadow:0 1px 0 #fff}
+    .subtitle{max-width:820px;margin:0 auto;color:var(--muted);font-size:1.05rem}
+    .hero-info{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin-top:.2rem}
+    .prize{font-family:var(--font-mono);font-weight:900;font-size:clamp(1.8rem,4.8vw,3.6rem);letter-spacing:.5px;
+      color:var(--accent);text-shadow:0 0 24px color-mix(in oklab,var(--accent) 36%, transparent)}
+    [data-theme="light"] .prize{text-shadow:none;color:#1e3a8a}
+    .cta{margin-top:.9rem;display:inline-flex;align-items:center;gap:.6rem;color:#0b1220;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));text-decoration:none;
+      padding:.85rem 1.15rem;border-radius:10px;font-weight:800;border:1px solid color-mix(in oklab,#000 10%, transparent);
+      box-shadow:0 16px 36px color-mix(in oklab,var(--accent) 30%, transparent);
+      transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+    .cta:hover{transform:translateY(-2px);box-shadow:0 22px 44px color-mix(in oklab,var(--accent) 36%, transparent)}
+
+    /* SECTIONS */
+    section{padding:var(--xl) 0}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:var(--lg)}
+    .section-head h2{font-family:var(--font-mono);letter-spacing:1px;font-size:clamp(1.2rem,2.5vw,1.6rem);position:relative;display:inline-block}
+    .section-head h2::after{content:"";position:absolute;left:0;bottom:-8px;height:3px;width:100%;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:2px}
+
+    /* ABOUT */
+    .about{display:grid;grid-template-columns:1.2fr .8fr;gap:var(--lg)}
+    .about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--lg);box-shadow:var(--shadow)}
+    .about h3{margin:0 0 .4rem 0;font-size:1rem;color:var(--muted);font-family:var(--font-mono)}
+    .about p{margin:0 0 .9rem 0}
+    .checklist{list-style:none;padding:0;margin:0;display:grid;gap:.5rem}
+    .checklist li{display:flex;gap:.6rem}
+    .checklist .tick{color:var(--accent);font-weight:900}
+
+    /* FRIENDBOARD */
+    .board{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--lg)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:var(--lg);
+      box-shadow:var(--shadow);position:relative;transition:transform .2s var(--ease),box-shadow .2s var(--ease);cursor:pointer}
+    .card:hover{transform:translateY(-4px);box-shadow:0 26px 50px color-mix(in oklab,var(--accent) 18%, transparent)}
+    .name{font-family:var(--font-mono);font-size:1.1rem;margin:0 0 .25rem 0}
+    .quip{color:var(--muted);font-size:.95rem;margin-bottom:.8rem}
+    .progress{height:10px;background:color-mix(in oklab,var(--bg-soft) 60%, transparent);border-radius:999px;overflow:hidden;border:1px solid var(--border)}
+    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      box-shadow:inset 0 0 12px color-mix(in oklab,var(--accent) 40%, transparent);transition:width 1s var(--ease) .2s}
+    .pct{font-family:var(--font-mono);font-size:.85rem;color:var(--muted);margin-top:.35rem;text-align:right}
+
+    /* MODAL (Profile) */
+    .modal{position:fixed;inset:0;display:none;place-items:center;z-index:30;background:color-mix(in oklab,var(--bg) 80%, transparent);backdrop-filter:blur(6px)}
+    .modal.show{display:grid}
+    .modal-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);width:min(760px,92vw);overflow:hidden}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.1rem;border-bottom:1px solid var(--border)}
+    .modal-title{font-family:var(--font-mono);margin:0}
+    .close{appearance:none;border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer}
+    .modal-body{display:grid;grid-template-columns:1fr .8fr;gap:1rem;padding:1rem}
+    .stat{font-family:var(--font-mono);font-size:.9rem;color:var(--muted)}
+    .timeline{background:var(--bg-soft);border:1px dashed var(--border);border-radius:10px;padding:.8rem}
+    .timeline h4{margin:.2rem 0 .6rem 0;font-family:var(--font-mono)}
+    .timeline ul{margin:.3rem 0 0 1rem}
+    .timeline li{margin:.25rem 0}
+
+    /* PROTOCOL + FAQ */
+    .proto{display:grid;grid-template-columns:1fr;gap:var(--lg)}
+    .rules,.faq{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--lg);box-shadow:var(--shadow)}
+    .rules ol{margin:.6rem 0 0 1.1rem}
+    .rules li{margin:.4rem 0}
+    .faq details{border-top:1px dashed var(--border);padding:.8rem 0}
+    .faq details:first-of-type{border-top:0}
+    .faq summary{cursor:pointer;list-style:none;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+    .faq summary::after{content:"+";color:var(--accent);transition:transform .2s var(--ease)}
+    .faq details[open] summary::after{transform:rotate(45deg)}
+    .faq p{margin:.6rem 0 0 0;color:var(--muted)}
+
+    /* FOOTER */
+    footer{padding:var(--lg) 0 var(--xl);border-top:1px solid var(--border);color:var(--muted)}
+    .footnote{font-size:.9rem;max-width:900px}
+    .copy{margin-top:.75rem;font-family:var(--font-mono)}
+
+    /* TINY TERMINAL (slightly bigger + slower cadence) */
+    .tiny-term{position:fixed;bottom:22px;right:22px;width:340px;max-width:calc(100vw - 24px);
+      background:color-mix(in oklab,var(--surface) 92%, transparent);border:1px solid var(--border);
+      border-radius:10px;box-shadow:var(--shadow);overflow:hidden;z-index:20}
+    .tiny-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;background:var(--bg-soft);
+      color:var(--muted);font-family:var(--font-mono);font-size:.8rem;padding:.42rem .6rem;border-bottom:1px solid var(--border)}
+    .tiny-controls{display:flex;align-items:center;gap:.35rem}
+    .btn-icon{appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--muted);
+      width:28px;height:24px;border-radius:6px;cursor:pointer;display:grid;place-items:center;transition:transform .15s var(--ease)}
+    .btn-icon:hover{transform:translateY(-1px)}
+    .tiny-body{font-family:var(--font-mono);font-size:.82rem;padding:.7rem .7rem;height:160px;overflow:auto}
+    .tiny-line{margin:.2rem 0;white-space:nowrap}
+
+    /* KERNEL PANIC */
+    .panic{position:fixed;inset:0;background:#000;display:none;place-items:center;z-index:50}
+    .panic.active{display:grid}
+    .panic-box{text-align:center;max-width:800px;padding:var(--lg);color:#fff}
+    .panic-title{font-family:var(--font-mono);font-size:clamp(2rem,8vw,4rem);letter-spacing:1px;margin-bottom:.6rem;
+      text-shadow:2px 2px var(--accent-2),-2px -2px var(--accent);animation:bleed 2s infinite}
+    @keyframes bleed{50%{text-shadow:-2px 2px var(--accent-2),2px -2px var(--accent)}}
+    .panic-detail{font-family:var(--font-mono);background:rgba(255,255,255,.06);border:1px solid #f87171;color:#e2e8f0;padding:.8rem;border-radius:8px;text-align:left}
+    .panic-count{margin-top:.8rem;font-family:var(--font-mono)}
+    .panic-btn{margin-top:1rem;display:inline-block;background:#fff;color:#000;padding:.6rem .9rem;border-radius:8px;text-decoration:none;font-weight:700}
+
+    /* SECRET (Konami) */
+    .secret{position:fixed;inset:0;display:none;place-items:center;z-index:45;background:color-mix(in oklab,var(--bg) 80%, transparent);backdrop-filter:blur(6px)}
+    .secret.active{display:grid}
+    .secret-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--lg);max-width:700px;box-shadow:var(--shadow)}
+    .secret h3{margin-top:0;font-family:var(--font-mono)}
+    .secret p{color:var(--muted)}
+
+    /* Reveal: always visible (no hiding). GSAP will animate when available. */
+    .reveal{opacity:1;transform:none}
+
+    /* Responsive */
+    @media (max-width:900px){.about{grid-template-columns:1fr}.modal-body{grid-template-columns:1fr}}
+    @media (max-width:680px){.container{padding:0 var(--md)}.links{display:none}.tiny-term{right:12px;left:12px;width:auto}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark">FS</div>
+        <div>From Scratch Invitational</div>
+      </div>
+      <nav class="links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#board">Friendboard</a>
+        <a href="#protocol">Protocol + FAQ</a>
+      </nav>
+      <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" title="Toggle theme">
+        <span class="dot" aria-hidden="true"></span> Theme
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="grid-bg" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <span class="eyebrow">Linux From Scratch — Friend Group Edition</span>
+        <h1 class="title">Build it. Break it. Learn from it.</h1>
+        <div class="hero-info">
+          <div class="org">Organized by Anirudh Gupta</div>
+          <div class="prize">$1,000,000*</div>
+        </div>
+        <p class="subtitle">A friendly, just‑for‑fun micro‑challenge inspired by Linux From Scratch (LFS). No pressure, no leaderboard drama — just vibes, compilers, and a good excuse to read excellent documentation.</p>
+        <div>
+          <a class="cta" href="https://www.linuxfromscratch.org/" target="_blank" rel="noopener">Open the LFS Guide ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="container">
+        <div class="section-head"><h2>What is Linux From Scratch?</h2></div>
+        <div class="about">
+          <article class="about-card reveal">
+            <h3>In plain terms</h3>
+            <p>Linux From Scratch (LFS) is a step‑by‑step book that shows you how to build a minimal Linux system yourself — entirely from source code. You start from an existing Linux host, compile a toolchain, build essential packages, chroot into your new environment, and eventually boot into a system you assembled by hand.</p>
+            <p>Why do it? Not for speed or convenience. LFS is about understanding. You’ll see how the pieces fit together: compiler, libc, init, shell, coreutils, and the glue that makes a Linux system boot.</p>
+            <p>What you’ll need: patience, time, disk space, and a willingness to read logs. If something breaks (it will), you’ll learn a lot by fixing it.</p>
+            <ul class="checklist" style="margin-top:.8rem">
+              <li><span class="tick">✓</span> Build a temporary toolchain (Binutils, GCC, Glibc)</li>
+              <li><span class="tick">✓</span> Enter chroot and build the base system</li>
+              <li><span class="tick">✓</span> Configure filesystems, fstab, users, and init</li>
+              <li><span class="tick">✓</span> Install a bootloader and reboot into your creation</li>
+            </ul>
+          </article>
+          <aside class="about-card reveal">
+            <h3>Friendly notes</h3>
+            <p>For this micro‑challenge, anything goes: VM or spare partition, modern editor, good coffee. The spirit is to learn and have fun.</p>
+            <p>Recommended extras:</p>
+            <ul class="checklist">
+              <li><span class="tick">•</span> A live USB to rescue your host if needed</li>
+              <li><span class="tick">•</span> A clipboard manager for commands</li>
+              <li><span class="tick">•</span> Backups of anything you care about</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Friendboard -->
+    <section id="board">
+      <div class="container">
+        <div class="section-head"><h2>Friendboard</h2></div>
+        <div class="board" id="boardGrid"></div>
+      </div>
+    </section>
+
+    <!-- Protocol + FAQ -->
+    <section id="protocol">
+      <div class="container proto">
+        <div class="section-head"><h2>Protocol + FAQ</h2></div>
+
+        <article class="rules reveal">
+          <h3 style="margin:0">Protocol</h3>
+          <ol>
+            <li>Have fun. If you learn something, you win.</li>
+            <li>VMs or spare partitions both count. Safety first.</li>
+            <li>Follow the LFS book. Copying commands is fine — understanding them is better.</li>
+            <li>Backups are your best friends. Don’t test fate on your only drive.</li>
+            <li>Share progress screenshots if you like; no pressure.</li>
+          </ol>
+        </article>
+
+        <article class="faq reveal">
+          <details open>
+            <summary>Do I need previous Linux experience?</summary>
+            <p>Basic terminal usage helps. The LFS book is very explicit and teaches a lot along the way.</p>
+          </details>
+          <details>
+            <summary>How long does it take?</summary>
+            <p>Anywhere from a weekend to several weeks, depending on pace and breaks. It’s not a race.</p>
+          </details>
+          <details>
+            <summary>Can I use a VM?</summary>
+            <p>Yes. VMs are perfect for learning. If you use a real partition, double‑check your device names.</p>
+          </details>
+          <details>
+            <summary>What counts as “success” here?</summary>
+            <p>Booting into the system you built and understanding the steps you took. That’s the good stuff.</p>
+          </details>
+          <details>
+            <summary>Is the friendboard real?</summary>
+            <p>No. It’s decorative and fictional for a lively look.</p>
+          </details>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="footnote"><strong>Disclaimer:</strong> This mini‑site and the “challenge” are for fun. All participant names are real friends, but progress data is fictional. Linux From Scratch is an educational project — read the official documentation for accurate instructions. <br><strong>* Prize note:</strong> The $1,000,000 is a joke. No prize money will be paid to the winner.</p>
+      <div class="copy">© <span id="year"></span> Anirudh Gupta</div>
+    </div>
+  </footer>
+
+  <!-- Tiny Terminal -->
+  <div class="tiny-term" id="tinyTerm" aria-live="polite">
+    <div class="tiny-head">
+      <div>tiny-term.sh</div>
+      <div class="tiny-controls">
+        <button class="btn-icon" id="panicBtn" title="Simulate kernel panic">!</button>
+        <button class="btn-icon" id="minBtn" title="Minimize">—</button>
+      </div>
+    </div>
+    <div class="tiny-body" id="tinyBody"></div>
+  </div>
+
+  <!-- Kernel Panic -->
+  <div class="panic" id="panic">
+    <div class="panic-box">
+      <div class="panic-title">KERNEL PANIC</div>
+      <div class="panic-detail" style="margin-bottom:.8rem;">
+        <div>CRITICAL: Motivation not found</div>
+        <div>at life/choices:0 → consider_backups()</div>
+      </div>
+      <div class="panic-count">Rebooting in <span id="count">5</span>…</div>
+      <a class="panic-btn" href="#" id="panicCancel">Cancel</a>
+    </div>
+  </div>
+
+  <!-- Secret (Konami code) -->
+  <div class="secret" id="secret">
+    <div class="secret-box">
+      <h3>Secret unlocked</h3>
+      <p>Pro tip: The real prize is the Linux you compile along the way. Also, keep backups. Always.</p>
+      <p style="margin-bottom:0"><a href="#" id="secretClose" style="color:var(--accent);text-decoration:none;font-weight:700;">Close</a></p>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title" id="profileTitle">Participant</h3>
+        <button class="close" id="profileClose" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="profileBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // THEME
+    const themeToggle=document.getElementById('themeToggle');
+    const metaTheme=document.querySelector('meta[name="theme-color"]');
+    function applyTheme(t){
+      document.documentElement.setAttribute('data-theme',t);
+      localStorage.setItem('theme',t);
+      themeToggle.setAttribute('aria-pressed', String(t==='dark'));
+      if(metaTheme) metaTheme.setAttribute('content',t==='dark'?'#0b1220':'#f7f9ff');
+    }
+    themeToggle.addEventListener('click',()=>{const cur=document.documentElement.getAttribute('data-theme')||'dark';applyTheme(cur==='dark'?'light':'dark')});
+    if(!localStorage.getItem('theme')&&window.matchMedia){
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',(e)=>applyTheme(e.matches?'dark':'light'));
+    }
+
+    // YEAR
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // FRIENDBOARD DATA
+    const friends = [
+      { name:"Anirudh Gupta", progress:1,  quip:"Opened the book, highlighted the foreword.",
+        stage:"2/250", stack:["Coffee","Docs","Optimism"], last:"Reading Preface",
+        notes:["Made LFS directory","Downloaded Binutils tarball","Skimmed host requirements"] },
+      { name:"Sohan Kundu",  progress:2,  quip:"Considering Arch for inspiration.",
+        stage:"5/250", stack:["Arch Wiki","Tabs x32"], last:"Comparing partition layouts",
+        notes:["VM snapshot created","Read Chapter 2 twice","Declared 'This weekend for sure'"] },
+      { name:"Tathya Gohil", progress:3,  quip:"Spreadsheet ready. Build plan T‑minus 7 coffees.",
+        stage:"8/250", stack:["Spreadsheets","tmux","GCC"], last:"Package list perfected",
+        notes:["Created build checklist","Color‑coded risks","Made 3 aliases for cd .."] },
+      { name:"Kalp",         progress:0,  quip:"Installing Linux… on the correct drive this time.",
+        stage:"0/250", stack:["Live USB","Hope"], last:"Asking which drive is /dev/sda",
+        notes:["Recovered bootloader","Wrote 'backup everything' on a sticky note"] },
+      { name:"Lakshya",      progress:6,  quip:"The error messages now speak fluent poetry.",
+        stage:"15/250", stack:["grep","sed","Stubbornness"], last:"Debugging binutils pass 2",
+        notes:["Built 3 packages","Read 2417 error lines","Has a log file named 'why'"] },
+      { name:"Ansh",         progress:0.5,quip:"Tutorial playlist created. Progress imminent.",
+        stage:"1/250", stack:["YouTube","Snacks"], last:"Collecting resources",
+        notes:["Downloaded the PDF","Pinned the LFS website","Evaluating desk posture"] }
+    ];
+
+    // RENDER FRIENDBOARD
+    const boardEl=document.getElementById('boardGrid');
+    friends.forEach((f,i)=>{
+      const card=document.createElement('article');
+      card.className='card reveal';
+      card.dataset.index=i;
+      card.innerHTML=`
+        <h3 class="name">${f.name}</h3>
+        <div class="quip">${f.quip}</div>
+        <div class="progress"><div class="bar" style="width:0%"></div></div>
+        <div class="pct">${f.progress}%</div>`;
+      boardEl.appendChild(card);
+    });
+
+    // Animate progress bars on entry
+    const barObs=new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const bar=entry.target.querySelector('.bar');
+          const pct=entry.target.querySelector('.pct')?.textContent.replace('%','');
+          if(bar&&pct) bar.style.width=pct+'%';
+          barObs.unobserve(entry.target);
+        }
+      });
+    },{threshold:.2});
+    document.querySelectorAll('.card').forEach(el=>barObs.observe(el));
+
+    // Profile modal
+    const modal=document.getElementById('profileModal');
+    const profileTitle=document.getElementById('profileTitle');
+    const profileBody=document.getElementById('profileBody');
+    const profileClose=document.getElementById('profileClose');
+
+    boardEl.addEventListener('click',(e)=>{
+      const card=e.target.closest('.card'); if(!card) return;
+      const f=friends[card.dataset.index];
+      profileTitle.textContent=f.name;
+      profileBody.innerHTML=`
+        <div>
+          <p class="stat">Stage: <strong>${f.stage}</strong></p>
+          <p class="stat">Current: <strong>${f.last}</strong></p>
+          <div class="progress"><div class="bar" style="width:${f.progress}%"></div></div>
+          <p class="stat" style="margin:.35rem 0 0; text-align:right;">${f.progress}%</p>
+          <div class="timeline" style="margin-top:1rem">
+            <h4>Activity log (fictional)</h4>
+            <ul>${f.notes.map(n=>`<li>${n}</li>`).join('')}</ul>
+          </div>
+        </div>
+        <div>
+          <div class="timeline">
+            <h4>Loadout</h4>
+            <p class="stat">Toolkit: ${f.stack.join(' • ')}</p>
+            <h4 style="margin-top:.8rem">Milestones</h4>
+            <ul>
+              <li>Toolchain bootstrap — <em>pending</em></li>
+              <li>Chroot into LFS — <em>pending</em></li>
+              <li>Boot into your system — <em>pending</em></li>
+            </ul>
+          </div>
+        </div>`;
+      modal.classList.add('show');
+    });
+    profileClose.addEventListener('click',()=>modal.classList.remove('show'));
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.classList.remove('show'); });
+
+    // Tiny terminal (slower cadence with jitter)
+    const tiny=document.getElementById('tinyBody');
+    const lines=[
+      "$ mkdir -p $LFS",
+      "$ mount /dev/sdXn $LFS",
+      "$ tar xf binutils-*.tar.xz && cd binutils-*",
+      "$ ../configure --prefix=$LFS/tools",
+      "$ make -j$(nproc) && make install",
+      "$ echo 'sanity: achieved'  # hopefully",
+      "$ cd && tar xf gcc-*.tar.xz",
+      "$ ../configure --target=$LFS_TGT --prefix=$LFS/tools",
+      "$ make -k  # coffee required",
+      "> build: progressing (slowly)",
+      "> read: the book explains everything"
+    ];
+    let idx=0, termTimer=null;
+    function tick(){
+      if(tiny.children.length>120) tiny.innerHTML='';
+      const div=document.createElement('div'); div.className='tiny-line'; div.textContent=lines[idx%lines.length];
+      tiny.appendChild(div); tiny.scrollTop=tiny.scrollHeight; idx++;
+      const base=2300, jitter=Math.round(Math.random()*900);
+      termTimer=setTimeout(tick, base+jitter);
+    }
+    termTimer=setTimeout(tick, 400);
+
+    // Minimize / panic
+    const minBtn=document.getElementById('minBtn');
+    const tinyTerm=document.getElementById('tinyTerm');
+    let minimized=false;
+    minBtn.addEventListener('click',()=>{ minimized=!minimized;
+      tinyTerm.style.height=minimized?'30px':''; document.querySelector('#tinyTerm .tiny-body').style.display=minimized?'none':'block';
+      minBtn.textContent=minimized?'+':'—';
+    });
+
+    const panicBtn=document.getElementById('panicBtn');
+    const panic=document.getElementById('panic');
+    const panicCancel=document.getElementById('panicCancel');
+    const countEl=document.getElementById('count');
+    let panicTimer=null;
+    function startPanic(){ panic.style.display='grid'; let n=5; countEl.textContent=n;
+      panicTimer=setInterval(()=>{ n--; countEl.textContent=n; if(n<=0){ clearInterval(panicTimer); location.reload(); } },1000);}
+    function stopPanic(){ panic.style.display='none'; if(panicTimer) clearInterval(panicTimer); }
+    panicBtn.addEventListener('click',startPanic);
+    panicCancel.addEventListener('click',(e)=>{ e.preventDefault(); stopPanic(); });
+
+    // Konami
+    const secret=document.getElementById('secret');
+    const secretClose=document.getElementById('secretClose');
+    const seq=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a','Enter'];
+    let pos=0;
+    window.addEventListener('keydown',(e)=>{
+      const key=e.key.length===1?e.key.toLowerCase():e.key;
+      if(key===seq[pos] || (seq[pos].length===1 && key===seq[pos])){ pos++; if(pos===seq.length){ secret.classList.add('active'); pos=0; } }
+      else pos=0;
+    });
+    secretClose.addEventListener('click',(e)=>{ e.preventDefault(); secret.classList.remove('active'); });
+
+    // GSAP motion (progressive enhancement only)
+    function initMotion(){
+      if(!window.gsap) return;
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from(".eyebrow,.title,.hero-info,.subtitle,.cta",{opacity:0,y:16,stagger:.12,duration:.8,ease:"power3.out",delay:.1});
+      gsap.utils.toArray(".section-head, .about-card, .card, .rules, .faq").forEach(el=>{
+        gsap.from(el,{opacity:0,y:22,duration:.8,ease:"power3.out",scrollTrigger:{trigger:el,start:"top 85%"}});
+      });
+    }
+    document.addEventListener('DOMContentLoaded', initMotion);
+  </script>
+</body>
+</html>
