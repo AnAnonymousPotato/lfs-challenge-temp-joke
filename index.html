@@ -1,715 +1,939 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Grandmaster Sanction</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- GSAP for animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- Embedded CSS -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Grandmaster Sanction</title>
+
+  <!-- SEO / Social -->
+  <meta name="description" content="A monument to hubris: The Grandmaster Sanction—Linux From Scratch meets psychological endurance." />
+  <meta name="theme-color" content="#0a0e17" />
+  <meta property="og:title" content="The Grandmaster Sanction" />
+  <meta property="og:description" content="The ultimate test of technical prowess and psychological endurance." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- display=swap to avoid FOIT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- GSAP (deferred) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Mark page as JS-enabled ASAP -->
+  <script>
+    document.documentElement.classList.replace('no-js', 'js');
+  </script>
+
+  <noscript>
     <style>
-        /* ========== GENERAL STYLES ========== */
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-tertiary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --text-tertiary: #4b5563;
-            --accent-blue: #0ea5e9;
-            --accent-purple: #8b5cf6;
-            --accent-magenta: #ec4899;
-            --accent-danger: #ef4444;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --space-md: 1rem;
-            --space-lg: 2rem;
-            --space-xl: 4rem;
-            --transition-normal: 0.3s ease;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html { scroll-behavior: smooth; }
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            line-height: 1.6;
-            overflow-x: hidden;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        body.loaded { opacity: 1; }
-        h1, h2, h3 { font-weight: 700; line-height: 1.2; }
-        section { padding: var(--space-xl) var(--space-lg); position: relative; }
-
-        .section-header {
-            display: flex; align-items: center; margin-bottom: var(--space-lg);
-        }
-        .section-header h2 {
-            font-family: var(--font-mono);
-            font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
-            margin-right: var(--space-md); position: relative;
-            display: inline-block;
-        }
-        .section-header h2::after {
-            content: ''; position: absolute; bottom: -8px; left: 0;
-            width: 100%; height: 3px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-        }
-
-        .pulse { width: 12px; height: 12px; border-radius: 50%; background-color: var(--accent-success); position: relative; }
-        .pulse::before {
-            content: ''; position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; background-color: var(--accent-success); opacity: 0.7;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 70% { transform: scale(2); opacity: 0; } }
-
-        .updated { margin-left: auto; font-size: 0.875rem; color: var(--text-secondary); font-family: var(--font-mono); }
-        
-        /* ========== HERO SECTION ========== */
-        #hero {
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            position: relative; padding: 0; overflow: hidden;
-        }
-        .hero-content { text-align: center; z-index: 2; padding: var(--space-lg); max-width: 90%; }
-        .hero-badge {
-            display: inline-block; background: var(--bg-tertiary);
-            padding: 0.25rem 1rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
-            letter-spacing: 1px; margin-bottom: var(--space-md); font-family: var(--font-mono);
-            border: 1px solid var(--text-tertiary);
-        }
-        .hero-title {
-            font-family: var(--font-mono);
-            font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; letter-spacing: -2px;
-            margin-bottom: var(--space-md);
-            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .hero-subtitle {
-            font-size: clamp(1rem, 3vw, 1.5rem); color: var(--text-secondary);
-            margin-bottom: 1rem; letter-spacing: 2px;
-        }
-        .hero-organizer {
-            font-size: 1rem; font-family: var(--font-mono); color: var(--text-secondary);
-            margin-bottom: var(--space-lg); letter-spacing: 1px;
-        }
-        .prize-amount {
-            font-size: clamp(2rem, 6vw, 4rem); font-weight: 700; font-family: var(--font-mono);
-            color: var(--accent-blue); margin-bottom: var(--space-md);
-            text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
-            display: inline-block;
-        }
-        .prize-asterisk { color: var(--accent-blue); font-weight: bold; text-decoration: none; }
-        .hero-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
-        .hero-backdrop { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1), transparent 70%); z-index: 1; }
-        .hero-grid {
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px; perspective: 1000px; transform-style: preserve-3d;
-            transform: rotateX(45deg) scale(2); opacity: 0.2; z-index: 0;
-        }
-
-        /* ========== ABOUT LFS (REDESIGNED) ========== */
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: var(--space-lg);
-            align-items: start;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .briefing-terminal {
-            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
-            padding: var(--space-lg); border-radius: 12px;
-            font-family: var(--font-mono); height: 100%;
-        }
-        .briefing-terminal .line { display: block; margin-bottom: 0.5rem; line-height: 1.5; }
-        .briefing-terminal .command { color: var(--accent-success); }
-        .briefing-terminal .output { color: var(--text-secondary); }
-        .briefing-terminal .highlight { color: var(--accent-blue); font-weight: bold; }
-        .briefing-terminal .warning { color: var(--accent-warning); }
-        .command-prompt-link {
-            display: inline-block; text-decoration: none; color: var(--text-primary);
-            margin-top: var(--space-md); transition: all var(--transition-normal);
-            border-bottom: 1px dashed var(--text-tertiary);
-        }
-        .command-prompt-link:hover {
-            background-color: var(--bg-tertiary);
-            text-shadow: 0 0 10px var(--accent-blue);
-            border-bottom: 1px solid var(--accent-blue);
-        }
-        .command-prompt-link .cursor {
-            display: inline-block; background-color: var(--text-primary);
-            width: 10px; height: 1em; vertical-align: middle; margin-left: 5px;
-            animation: typing 1s infinite;
-        }
-        .artifact-analysis {
-            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
-            padding: var(--space-lg); border-radius: 12px; font-family: var(--font-mono);
-            height: 100%;
-        }
-        .artifact-analysis h3 { color: var(--accent-purple); margin-bottom: 1.5rem; }
-        .artifact-prop { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px dashed var(--bg-tertiary); padding-bottom: 1rem; font-size: 0.9rem; }
-        .artifact-prop-label { color: var(--text-secondary); }
-        .artifact-prop-value { color: var(--text-primary); font-weight: bold; }
-        .artifact-prop-value.warning { color: var(--accent-warning); }
-        
-        /* ========== INTERACTIVE TERMINAL & LEADERBOARD ========== */
-        #terminal {
-            position: fixed; bottom: 30px; right: 30px; width: 300px; height: 180px;
-            background-color: rgba(0, 0, 0, 0.8); border-radius: 8px; border: 1px solid var(--accent-blue);
-            overflow: hidden; box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); z-index: 10;
-        }
-        .terminal-header { display: flex; align-items: center; padding: 0.25rem 0.5rem; background-color: var(--bg-tertiary); }
-        .terminal-buttons { display: flex; gap: 6px; margin-right: 0.5rem; }
-        .terminal-buttons span { width: 12px; height: 12px; border-radius: 50%; }
-        .terminal-buttons span:nth-child(1) { background-color: var(--accent-danger); }
-        .terminal-buttons span:nth-child(2) { background-color: var(--accent-warning); }
-        .terminal-buttons span:nth-child(3) { background-color: var(--accent-success); }
-        .terminal-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
-        .terminal-body { padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; height: calc(100% - 28px); overflow-y: auto; }
-        #terminal-output .line { margin-bottom: 4px; }
-        #terminal-output .typing { animation: typing 1s infinite; }
-        @keyframes typing { 50% { opacity: 0; } }
-
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: var(--space-lg); }
-        .participant-card {
-            background-color: var(--bg-secondary); border-radius: 12px; padding: var(--space-lg);
-            position: relative; border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all var(--transition-normal); cursor: pointer; overflow: hidden;
-        }
-        .participant-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
-        .participant-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7; }
-        .participant-name { font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 0.5rem; }
-        .last-transmission { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); border-left: 2px solid var(--text-tertiary); padding-left: 0.5rem; margin-top: 1rem; font-style: italic; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
-        .detail-label { color: var(--text-secondary); font-size: 0.875rem; }
-        .detail-value { font-family: var(--font-mono); font-size: 0.875rem; }
-        .progress-bar-container { height: 8px; background-color: var(--bg-tertiary); border-radius: 4px; overflow: hidden; margin-top: 1rem; }
-        .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 4px; transition: width 1s ease 0.5s; }
-        .status-indicator { position: absolute; top: 1rem; right: 1rem; display: flex; align-items: center; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 0.25rem; }
-        .status-dot.active { background-color: var(--accent-success); box-shadow: 0 0 10px var(--accent-success); animation: blink 2s infinite; }
-        .status-dot.error { background-color: var(--accent-danger); box-shadow: 0 0 10px var(--accent-danger); }
-        .status-dot.stalled { background-color: var(--accent-warning); box-shadow: 0 0 10px var(--accent-warning); }
-        .status-text { font-size: 0.75rem; font-family: var(--font-mono); }
-        @keyframes blink { 50% { opacity: 0.5; } }
-        
-        /* ========== SPONSORS (REDESIGNED) ========== */
-        .sponsors-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-lg); text-align: center; }
-        .sponsor-card {
-            background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
-            padding: var(--space-lg); border-radius: 12px;
-            transition: all var(--transition-normal); flex-basis: 300px;
-        }
-        .sponsor-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-            border-color: var(--accent-blue);
-        }
-        .sponsor-logo {
-            font-family: var(--font-mono); font-size: 1.5rem; font-weight: bold;
-            color: var(--text-primary); margin-bottom: 1rem;
-        }
-        .sponsor-logo span { color: var(--accent-blue); }
-        .sponsor-tagline { font-style: italic; color: var(--text-secondary); }
-        
-        /* ========== FAQ (REDESIGNED) ========== */
-        .faq-container { max-width: 800px; margin: 0 auto; }
-        .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); }
-        .faq-details:hover { border-color: var(--accent-purple); }
-        .faq-details summary {
-            font-family: var(--font-mono);
-            font-size: 1.1rem; font-weight: 600; padding: 1.5rem; cursor: pointer;
-            color: var(--text-primary); list-style: none; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-        .faq-details summary::-webkit-details-marker { display: none; }
-        .faq-details summary::after {
-            content: '+'; font-size: 2rem; color: var(--accent-blue);
-            transition: transform var(--transition-normal);
-        }
-        .faq-details[open] { border-color: var(--accent-blue); }
-        .faq-details[open] summary { color: var(--accent-blue); }
-        .faq-details[open] summary::after { transform: rotate(45deg); }
-        .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-secondary); }
-
-        /* ========== RULES MODAL ========== */
-        #rules-trigger { display: block; margin: 0 auto; font-family: var(--font-mono); font-size: 1rem; padding: 1rem 2rem; border-radius: 8px; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; transition: all var(--transition-normal); }
-        #rules-trigger:hover { background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue); }
-        .modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0; transition: opacity var(--transition-normal); }
-        .modal.visible { opacity: 1; pointer-events: all; }
-        .modal-content { background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; position: relative; border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal); }
-        .modal.visible .modal-content { transform: scale(1); }
-        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; z-index: 2;}
-        .modal-close:hover { background-color: var(--accent-danger); transform: rotate(90deg); }
-        .rules-modal-content { max-width: 800px; background-color: var(--bg-primary); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
-        .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); position: relative;}
-        .rules-modal-header h3 { font-family: var(--font-mono); color: var(--accent-blue); }
-        .rules-modal-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); }
-        .rules-modal-body { padding: 1.5rem; overflow-y: auto; }
-        .rules-modal-body h4 { font-size: 1.1rem; color: var(--accent-purple); margin: 1.5rem 0 0.5rem 0; }
-        .rules-modal-body p { color: var(--text-secondary); margin-bottom: 1rem; }
-        
-        /* ========== PROFILE MODAL SPECIFICS ========== */
-        .profile-modal-content { max-width: 700px; padding: var(--space-xl); }
-        .profile-header { display: flex; align-items: center; margin-bottom: var(--space-lg); }
-        .profile-avatar { width: 80px; height: 80px; border-radius: 12px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
-        .psych-status { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-warning); margin-top: 0.5rem; border-left: 2px solid var(--accent-warning); padding-left: 0.5rem; }
-        .profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: var(--space-lg); }
-        .stat-card { background-color: var(--bg-tertiary); padding: 0.5rem; border-radius: 8px; text-align: center; }
-        
-        /* ========== SYSTEM INTEGRITY (RESTORED) ========== */
-        .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .status-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-family: var(--font-mono); letter-spacing: 1px; }
-        .status-value { font-size: 1rem; font-weight: 600; font-family: var(--font-mono); }
-        #kernel-panic-trigger {
-            color: var(--accent-danger); cursor: pointer; transition: all 0.2s ease;
-            display: inline-block; font-weight: bold;
-        }
-        #kernel-panic-trigger:hover {
-            text-shadow: 0 0 15px var(--accent-danger);
-            transform: scale(1.05);
-        }
-        #kernel-panic-trigger .bracket { transition: all 0.2s ease; display: inline-block; }
-        #kernel-panic-trigger:hover .bracket { transform: scaleX(1.5); }
-        #kernel-panic { position: fixed; inset: 0; background-color: #000; z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; opacity: 0; transition: opacity 0.2s ease; }
-        #kernel-panic.active { opacity: 1; pointer-events: all; }
-        .panic-content { max-width: 800px; padding: var(--space-lg); text-align: center; }
-        .glitch-text {
-            font-size: 4rem; font-weight: 700; font-family: var(--font-mono);
-            color: var(--text-primary); text-transform: uppercase;
-            margin-bottom: var(--space-lg); position: relative;
-            animation: glitch-color-bleed 2s infinite;
-        }
-        @keyframes glitch-color-bleed {
-            0% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
-            33% { text-shadow: -2px 2px var(--accent-magenta), 2px -2px var(--accent-blue); }
-            66% { text-shadow: 2px -2px var(--accent-magenta), -2px 2px var(--accent-blue); }
-            100% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
-        }
-        .error-details {
-            font-family: var(--font-mono); text-align: left; margin-bottom: var(--space-lg);
-            border: 1px solid var(--accent-danger); padding: 1rem; background-color: rgba(239, 68, 68, 0.1); border-radius: 4px;
-        }
-        .reboot-message { font-size: 1rem; margin-top: var(--space-lg); font-family: var(--font-mono); }
-        #countdown { font-weight: 700; color: var(--accent-danger); }
-
-        /* ========== FOOTER & DISCLAIMER ========== */
-        footer { text-align: center; padding: var(--space-lg) var(--space-md); border-top: 1px solid var(--border-color); color: var(--text-secondary); }
-        .disclaimer { font-size: 0.875rem; max-width: 700px; margin: 0 auto 1.5rem auto; color: var(--text-tertiary); line-height: 1.5; }
-        .credit { font-size: 0.875rem; font-family: var(--font-mono); }
-
-        /* ========== RESPONSIVE STYLES ========== */
-        @media (max-width: 768px) {
-            section { padding: var(--space-lg) var(--space-md); }
-            .dashboard, .sponsors-grid, .about-grid { grid-template-columns: 1fr; }
-            #terminal { display: none; }
-        }
+      /* Ensure content is visible when JS is disabled */
+      body { opacity: 1 !important; }
     </style>
+  </noscript>
+
+  <style>
+    /* ========== TOKENS ========== */
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --border-color: #263244; /* FIXED: previously undefined */
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-tertiary: #6b7280;
+      --accent-blue: #0ea5e9;
+      --accent-purple: #8b5cf6;
+      --accent-magenta: #ec4899;
+      --accent-danger: #ef4444;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 2rem;
+      --space-xl: 4rem;
+      --transition-normal: 0.3s ease;
+      --focus-ring: 2px dashed var(--accent-blue);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    /* Animate in only when JS is available */
+    html.js body { opacity: 0; transition: opacity 1s ease; }
+    html.js body.loaded { opacity: 1; }
+
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, [role="button"]:focus-visible {
+      outline: var(--focus-ring);
+      outline-offset: 3px;
+    }
+
+    h1, h2, h3 { font-weight: 700; line-height: 1.2; }
+    section { padding: var(--space-xl) var(--space-lg); position: relative; }
+    .sr-only {
+      position: absolute !important;
+      width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .skip-link {
+      position: absolute; left: 0; top: 0;
+      background: var(--bg-tertiary); color: var(--text-primary);
+      padding: 0.5rem 1rem; transform: translateY(-120%);
+      transition: transform 0.2s ease; z-index: 999;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    header {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(10, 14, 23, 0.7);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .nav {
+      max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
+    }
+    .brand { font-family: var(--font-mono); letter-spacing: 1px; color: var(--text-secondary); }
+    .nav a {
+      color: var(--text-secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: color var(--transition-normal), background var(--transition-normal);
+    }
+    .nav a:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+
+    .section-header {
+      display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg);
+    }
+    .section-header h2 {
+      font-family: var(--font-mono);
+      font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
+      margin-right: var(--space-md); position: relative; display: inline-block;
+    }
+    .section-header h2::after {
+      content: ''; position: absolute; bottom: -8px; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    }
+
+    .pulse { width: 12px; height: 12px; border-radius: 50%; background-color: var(--accent-success); position: relative; }
+    .pulse::before {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 50%; background-color: var(--accent-success); opacity: 0.7;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 70% { transform: scale(2); opacity: 0; } }
+
+    .updated { margin-left: auto; font-size: 0.875rem; color: var(--text-secondary); font-family: var(--font-mono); }
+
+    /* ========== HERO ========== */
+    #hero {
+      min-height: 100vh; display: grid; place-items: center;
+      position: relative; padding: 0; overflow: hidden;
+    }
+    .hero-content { text-align: center; z-index: 2; padding: var(--space-lg); max-width: 90%; }
+    .hero-badge {
+      display: inline-block; background: var(--bg-tertiary);
+      padding: 0.25rem 1rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 1px; margin-bottom: var(--space-md); font-family: var(--font-mono);
+      border: 1px solid var(--text-tertiary);
+    }
+    .hero-title {
+      font-family: var(--font-mono);
+      font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; letter-spacing: -2px;
+      margin-bottom: var(--space-md);
+      background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero-subtitle {
+      font-size: clamp(1rem, 3vw, 1.5rem); color: var(--text-secondary);
+      margin-bottom: 1rem; letter-spacing: 2px;
+    }
+    .hero-organizer {
+      font-size: 1rem; font-family: var(--font-mono); color: var(--text-secondary);
+      margin-bottom: var(--space-lg); letter-spacing: 1px;
+    }
+    .prize-amount {
+      font-size: clamp(2rem, 6vw, 4rem); font-weight: 700; font-family: var(--font-mono);
+      color: var(--accent-blue); margin-bottom: var(--space-md);
+      text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+      display: inline-block;
+    }
+    .prize-asterisk { color: var(--accent-blue); font-weight: bold; text-decoration: none; }
+    .hero-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+    .hero-backdrop { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1), transparent 70%); z-index: 1; }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0; opacity: 0.2;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      perspective: 1000px; transform-style: preserve-3d;
+      transform: rotateX(45deg) scale(2);
+      will-change: transform;
+    }
+
+    /* ========== ABOUT ========== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-lg);
+      align-items: start;
+      max-width: 1000px; margin: 0 auto;
+    }
+    .briefing-terminal, .artifact-analysis {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--bg-tertiary);
+      padding: var(--space-lg);
+      border-radius: 12px; font-family: var(--font-mono);
+    }
+    .briefing-terminal .line { display: block; margin-bottom: 0.5rem; line-height: 1.5; }
+    .briefing-terminal .command { color: var(--accent-success); }
+    .briefing-terminal .output { color: var(--text-secondary); }
+    .briefing-terminal .highlight { color: var(--accent-blue); font-weight: bold; }
+    .briefing-terminal .warning { color: var(--accent-warning); }
+    .command-prompt-link {
+      display: inline-block; text-decoration: none; color: var(--text-primary);
+      margin-top: var(--space-md); transition: all var(--transition-normal);
+      border-bottom: 1px dashed var(--text-tertiary);
+    }
+    .command-prompt-link:hover,
+    .command-prompt-link:focus-visible {
+      background-color: var(--bg-tertiary);
+      text-shadow: 0 0 10px var(--accent-blue);
+      border-bottom: 1px solid var(--accent-blue);
+    }
+    .command-prompt-link .cursor {
+      display: inline-block; background-color: var(--text-primary);
+      width: 10px; height: 1em; vertical-align: middle; margin-left: 5px;
+      animation: typing 1s infinite;
+    }
+
+    .artifact-analysis h3 { color: var(--accent-purple); margin-bottom: 1.5rem; }
+    .artifact-prop { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px dashed var(--bg-tertiary); padding-bottom: 1rem; font-size: 0.9rem; }
+    .artifact-prop-label { color: var(--text-secondary); }
+    .artifact-prop-value { color: var(--text-primary); font-weight: bold; }
+    .artifact-prop-value.warning { color: var(--accent-warning); }
+
+    /* ========== FLOATING TERMINAL ========== */
+    #terminal {
+      position: fixed; bottom: 30px; right: 30px; width: 300px; height: 180px;
+      background-color: rgba(0, 0, 0, 0.8); border-radius: 8px; border: 1px solid var(--accent-blue);
+      overflow: hidden; box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); z-index: 10;
+    }
+    .terminal-header { display: flex; align-items: center; padding: 0.25rem 0.5rem; background-color: var(--bg-tertiary); }
+    .terminal-buttons { display: flex; gap: 6px; margin-right: 0.5rem; }
+    .terminal-buttons span { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-buttons span:nth-child(1) { background-color: var(--accent-danger); }
+    .terminal-buttons span:nth-child(2) { background-color: var(--accent-warning); }
+    .terminal-buttons span:nth-child(3) { background-color: var(--accent-success); }
+    .terminal-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
+    .terminal-body { padding: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; height: calc(100% - 28px); overflow-y: auto; }
+    #terminal-output[aria-live] .line { margin-bottom: 4px; }
+    #terminal-output .typing { animation: typing 1s infinite; }
+    @keyframes typing { 50% { opacity: 0; } }
+
+    /* ========== LEADERBOARD ========== */
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: var(--space-lg); }
+    .participant-card {
+      background-color: var(--bg-secondary); border-radius: 12px; padding: var(--space-lg);
+      position: relative; border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+      cursor: pointer; overflow: hidden;
+    }
+    .participant-card:hover,
+    .participant-card:focus-within { transform: translateY(-5px); border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(14,165,233,0.15); }
+    .participant-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7; }
+    .participant-name { font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .last-transmission { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); border-left: 2px solid var(--text-tertiary); padding-left: 0.5rem; margin-top: 1rem; font-style: italic; }
+    .detail-row { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+    .detail-label { color: var(--text-secondary); font-size: 0.875rem; }
+    .detail-value { font-family: var(--font-mono); font-size: 0.875rem; }
+    .progress-bar-container { height: 8px; background-color: var(--bg-tertiary); border-radius: 4px; overflow: hidden; margin-top: 1rem; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 4px; transition: width 1s ease 0.3s; }
+    .status-indicator { position: absolute; top: 1rem; right: 1rem; display: flex; align-items: center; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 0.25rem; }
+    .status-dot.active { background-color: var(--accent-success); box-shadow: 0 0 10px var(--accent-success); animation: blink 2s infinite; }
+    .status-dot.error { background-color: var(--accent-danger); box-shadow: 0 0 10px var(--accent-danger); }
+    .status-dot.stalled { background-color: var(--accent-warning); box-shadow: 0 0 10px var(--accent-warning); }
+    .status-text { font-size: 0.75rem; font-family: var(--font-mono); }
+    @keyframes blink { 50% { opacity: 0.5; } }
+
+    /* ========== SPONSORS ========== */
+    .sponsors-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-lg); text-align: center; }
+    .sponsor-card {
+      background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
+      padding: var(--space-lg); border-radius: 12px;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+      flex-basis: 300px;
+    }
+    .sponsor-card:hover,
+    .sponsor-card:focus-within {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+      border-color: var(--accent-blue);
+    }
+    .sponsor-logo {
+      font-family: var(--font-mono); font-size: 1.5rem; font-weight: bold;
+      color: var(--text-primary); margin-bottom: 1rem;
+    }
+    .sponsor-logo span { color: var(--accent-blue); }
+    .sponsor-tagline { font-style: italic; color: var(--text-secondary); }
+
+    /* ========== FAQ ========== */
+    .faq-container { max-width: 800px; margin: 0 auto; }
+    .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); }
+    .faq-details:hover { border-color: var(--accent-purple); }
+    .faq-details summary {
+      font-family: var(--font-mono);
+      font-size: 1.1rem; font-weight: 600; padding: 1.5rem; cursor: pointer;
+      color: var(--text-primary); list-style: none; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .faq-details summary::-webkit-details-marker { display: none; }
+    .faq-details summary::after {
+      content: '+'; font-size: 2rem; color: var(--accent-blue);
+      transition: transform var(--transition-normal);
+    }
+    .faq-details[open] { border-color: var(--accent-blue); }
+    .faq-details[open] summary { color: var(--accent-blue); }
+    .faq-details[open] summary::after { transform: rotate(45deg); }
+    .faq-content { padding: 0 1.5rem 1.5rem; color: var(--text-secondary); }
+
+    /* ========== RULES MODAL ========== */
+    .button-primary {
+      display: inline-block; font-family: var(--font-mono); font-size: 1rem;
+      padding: 1rem 2rem; border-radius: 8px; background-color: var(--bg-secondary);
+      border: 1px solid var(--bg-tertiary); color: var(--text-secondary);
+      cursor: pointer; transition: all var(--transition-normal);
+    }
+    .button-primary:hover, .button-primary:focus-visible {
+      background-color: var(--bg-tertiary); color: var(--text-primary);
+      border-color: var(--accent-blue); box-shadow: 0 0 15px var(--accent-blue);
+    }
+
+    .modal {
+      position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+      display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0;
+      transition: opacity var(--transition-normal);
+    }
+    .modal.visible { opacity: 1; pointer-events: all; }
+    .modal-content {
+      background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-height: 90vh;
+      overflow: hidden; display: flex; flex-direction: column; position: relative;
+      border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal);
+    }
+    .modal.visible .modal-content { transform: scale(1); }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; z-index: 2; border: none; color: var(--text-primary);
+    }
+    .modal-close:hover, .modal-close:focus-visible { background-color: var(--accent-danger); transform: rotate(90deg); }
+
+    .rules-modal-content { max-width: 800px; background-color: var(--bg-primary); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
+    .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); position: relative;}
+    .rules-modal-header h3 { font-family: var(--font-mono); color: var(--accent-blue); }
+    .rules-modal-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); }
+    .rules-modal-body { padding: 1.5rem; overflow-y: auto; }
+    .rules-modal-body h4 { font-size: 1.1rem; color: var(--accent-purple); margin: 1.5rem 0 0.5rem 0; }
+    .rules-modal-body p { color: var(--text-secondary); margin-bottom: 1rem; }
+
+    /* ========== PROFILE MODAL ========== */
+    .profile-modal-content { max-width: 700px; padding: var(--space-xl); }
+    .profile-header { display: flex; align-items: center; margin-bottom: var(--space-lg); }
+    .profile-avatar { width: 80px; height: 80px; border-radius: 12px; margin-right: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; }
+    .psych-status { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-warning); margin-top: 0.5rem; border-left: 2px solid var(--accent-warning); padding-left: 0.5rem; }
+    .profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: var(--space-lg); }
+    .stat-card { background-color: var(--bg-tertiary); padding: 0.5rem; border-radius: 8px; text-align: center; }
+
+    /* ========== SYSTEM INTEGRITY ========== */
+    .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .status-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-family: var(--font-mono); letter-spacing: 1px; }
+    .status-value { font-size: 1rem; font-weight: 600; font-family: var(--font-mono); }
+    /* Make trigger a proper button */
+    #kernel-panic-trigger {
+      color: var(--accent-danger); cursor: pointer; transition: transform 0.2s ease, text-shadow 0.2s ease;
+      display: inline-block; font-weight: bold; background: transparent; border: none; padding: 0; font: inherit;
+    }
+    #kernel-panic-trigger:hover, #kernel-panic-trigger:focus-visible {
+      text-shadow: 0 0 15px var(--accent-danger);
+      transform: scale(1.05);
+    }
+    #kernel-panic-trigger .bracket { transition: transform 0.2s ease; display: inline-block; }
+    #kernel-panic-trigger:hover .bracket { transform: scaleX(1.5); }
+    #kernel-panic {
+      position: fixed; inset: 0; background-color: #000; z-index: 1000; display: none;
+      align-items: center; justify-content: center; flex-direction: column; opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    #kernel-panic.active { opacity: 1; pointer-events: all; }
+    .panic-content { max-width: 800px; padding: var(--space-lg); text-align: center; }
+    .glitch-text {
+      font-size: 4rem; font-weight: 700; font-family: var(--font-mono);
+      color: var(--text-primary); text-transform: uppercase;
+      margin-bottom: var(--space-lg); position: relative;
+      animation: glitch-color-bleed 2s infinite;
+    }
+    @keyframes glitch-color-bleed {
+      0% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
+      33% { text-shadow: -2px 2px var(--accent-magenta), 2px -2px var(--accent-blue); }
+      66% { text-shadow: 2px -2px var(--accent-magenta), -2px 2px var(--accent-blue); }
+      100% { text-shadow: 2px 2px var(--accent-magenta), -2px -2px var(--accent-blue); }
+    }
+    .error-details {
+      font-family: var(--font-mono); text-align: left; margin-bottom: var(--space-lg);
+      border: 1px solid var(--accent-danger); padding: 1rem; background-color: rgba(239, 68, 68, 0.1); border-radius: 4px;
+    }
+    .reboot-message { font-size: 1rem; margin-top: var(--space-lg); font-family: var(--font-mono); }
+    #countdown { font-weight: 700; color: var(--accent-danger); }
+
+    /* ========== FOOTER ========== */
+    footer { text-align: center; padding: var(--space-lg) var(--space-md); border-top: 1px solid var(--border-color); color: var(--text-secondary); }
+    .disclaimer { font-size: 0.875rem; max-width: 700px; margin: 0 auto 1.5rem auto; color: var(--text-tertiary); line-height: 1.5; }
+    .credit { font-size: 0.875rem; font-family: var(--font-mono); }
+
+    /* ========== RESPONSIVE + REDUCED MOTION ========== */
+    @media (max-width: 768px) {
+      section { padding: var(--space-lg) var(--space-md); }
+      .dashboard, .about-grid { grid-template-columns: 1fr; }
+      #terminal { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+      .hero-grid { transform: none !important; }
+    }
+  </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">The Grandmaster Sanction</div>
+      <div class="nav-links" role="navigation">
+        <a href="#about-lfs">About</a>
+        <a href="#leaderboard">Status</a>
+        <a href="#rules">Protocol</a>
+        <a href="#sponsors">Sponsors</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
     <!-- Hero Section -->
-    <section id="hero">
-        <div class="hero-content">
-            <div class="hero-badge">A MONUMENT TO HUBRIS</div>
-            <h1 class="hero-title">THE GRANDMASTER SANCTION</h1>
-            <p class="hero-organizer">Organized by Anirudh Gupta</p>
-            <div class="prize-amount" data-terminal-info="WARNING: Prize is a theoretical construct.">$1,000,000<a href="#fine-print" class="prize-asterisk">*</a></div>
-            <p class="hero-description">The ultimate test of technical prowess and psychological endurance, forged in the fires of Linux From Scratch.</p>
+    <section id="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-badge">A MONUMENT TO HUBRIS</div>
+        <h1 id="hero-title" class="hero-title">THE GRANDMASTER SANCTION</h1>
+        <p class="hero-organizer">Organized by Anirudh Gupta</p>
+        <div class="prize-amount" data-terminal-info="WARNING: Prize is a theoretical construct.">
+          $1,000,000<a href="#fine-print" class="prize-asterisk" aria-label="See prize fine print">*</a>
         </div>
-        <div class="hero-backdrop"></div>
-        <div class="hero-grid"></div>
+        <p class="hero-description">The ultimate test of technical prowess and psychological endurance, forged in the fires of Linux From Scratch.</p>
+      </div>
+      <div class="hero-backdrop" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
     </section>
 
     <!-- About LFS Section -->
-    <section id="about-lfs">
-        <div class="section-header">
-            <h2>About The Arena</h2>
+    <section id="about-lfs" aria-labelledby="about-title">
+      <div class="section-header">
+        <h2 id="about-title">About The Arena</h2>
+      </div>
+      <div class="about-grid">
+        <div class="briefing-terminal" id="briefing-terminal" aria-live="polite" role="region" aria-label="Briefing terminal">
+          <!-- Populated by JavaScript -->
         </div>
-        <div class="about-grid">
-            <div class="briefing-terminal" id="briefing-terminal">
-                <!-- Populated by JavaScript -->
-            </div>
-            <div class="artifact-analysis">
-                <h3>[ ARTIFACT ANALYSIS: LFS-DOC-V11.3 ]</h3>
-                <div class="artifact-prop">
-                    <span class="artifact-prop-label">Pages</span>
-                    <span class="artifact-prop-value">468 (See Appendix B for corrections)</span>
-                </div>
-                <div class="artifact-prop">
-                    <span class="artifact-prop-label">Complexity Index</span>
-                    <span class="artifact-prop-value">Esoteric</span>
-                </div>
-                <div class="artifact-prop">
-                    <span class="artifact-prop-label">Known Side Effects</span>
-                    <span class="artifact-prop-value warning">Spontaneous weeping, questioning of life choices</span>
-                </div>
-                <div class="artifact-prop">
-                    <span class="artifact-prop-label">Compiler Requirement</span>
-                    <span class="artifact-prop-value">GCC (and the user's soul)</span>
-                </div>
-            </div>
+        <div class="artifact-analysis">
+          <h3>[ ARTIFACT ANALYSIS: LFS-DOC-V11.3 ]</h3>
+          <div class="artifact-prop">
+            <span class="artifact-prop-label">Pages</span>
+            <span class="artifact-prop-value">468 (See Appendix B for corrections)</span>
+          </div>
+          <div class="artifact-prop">
+            <span class="artifact-prop-label">Complexity Index</span>
+            <span class="artifact-prop-value">Esoteric</span>
+          </div>
+          <div class="artifact-prop">
+            <span class="artifact-prop-label">Known Side Effects</span>
+            <span class="artifact-prop-value warning">Spontaneous weeping, questioning of life choices</span>
+          </div>
+          <div class="artifact-prop">
+            <span class="artifact-prop-label">Compiler Requirement</span>
+            <span class="artifact-prop-value">GCC (and the user's soul)</span>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Interactive Terminal Widget -->
-    <div id="terminal">
-        <div class="terminal-header">
-            <div class="terminal-buttons"><span></span><span></span><span></span></div>
-            <div class="terminal-title">lfs-challenge.sh</div>
+    <!-- Floating Terminal Widget -->
+    <div id="terminal" aria-live="polite" role="log" aria-label="Challenge terminal">
+      <div class="terminal-header">
+        <div class="terminal-buttons"><span></span><span></span><span></span></div>
+        <div class="terminal-title">lfs-challenge.sh</div>
+      </div>
+      <div class="terminal-body">
+        <div id="terminal-output">
+          <!-- Populated by JavaScript -->
         </div>
-        <div class="terminal-body">
-            <div id="terminal-output">
-                <!-- Populated by JavaScript -->
-            </div>
-        </div>
+      </div>
     </div>
 
     <!-- Leaderboard/Dashboard Section -->
-    <section id="leaderboard">
-        <div class="section-header">
-            <h2>LIVE STATUS</h2>
-            <div class="pulse"></div>
-            <div class="updated">Last updated: <span id="last-updated">Just now</span></div>
-        </div>
-        <div class="dashboard">
-            <!-- Populated by JavaScript -->
-        </div>
+    <section id="leaderboard" aria-labelledby="status-title">
+      <div class="section-header">
+        <h2 id="status-title">LIVE STATUS</h2>
+        <div class="pulse" aria-hidden="true"></div>
+        <div class="updated">Last updated: <span id="last-updated" aria-live="polite">Just now</span></div>
+      </div>
+      <div class="dashboard" role="list">
+        <!-- Populated by JavaScript -->
+      </div>
     </section>
-    
+
     <!-- Rules Section -->
-    <section id="rules">
-        <div class="section-header">
-            <h2>The Protocol</h2>
-        </div>
-        <button id="rules-trigger">[ ACCESS THE ARTICLES OF COMPETITION ]</button>
+    <section id="rules" aria-labelledby="rules-title">
+      <div class="section-header">
+        <h2 id="rules-title">The Protocol</h2>
+      </div>
+      <button id="rules-trigger" class="button-primary" type="button">[ ACCESS THE ARTICLES OF COMPETITION ]</button>
     </section>
 
     <!-- Sponsors Section -->
-    <section id="sponsors">
-        <div class="section-header">
-            <h2>Official Sponsors</h2>
-        </div>
-        <div class="sponsors-grid">
-            <div class="sponsor-card">
-                <div class="sponsor-logo">No-<span>Sleep</span>™</div>
-                <div class="sponsor-tagline">"Code All Night, Question Life Choices in the Morning!"</div>
-            </div>
-            <div class="sponsor-card">
-                <div class="sponsor-logo">Infinite<span>Loop</span></div>
-                <div class="sponsor-tagline">"The official coffee of 'just one more compile'."</div>
-            </div>
-            <div class="sponsor-card">
-                <div class="sponsor-logo">Stack<span>Overflow</span></div>
-                <div class="sponsor-tagline">"Our Official Copypasta Partner."</div>
-            </div>
-        </div>
+    <section id="sponsors" aria-labelledby="sponsors-title">
+      <div class="section-header">
+        <h2 id="sponsors-title">Official Sponsors</h2>
+      </div>
+      <div class="sponsors-grid">
+        <article class="sponsor-card" tabindex="0" aria-label="No-Sleep sponsor">
+          <div class="sponsor-logo">No-<span>Sleep</span>™</div>
+          <div class="sponsor-tagline">"Code All Night, Question Life Choices in the Morning!"</div>
+        </article>
+        <article class="sponsor-card" tabindex="0" aria-label="Infinite Loop sponsor">
+          <div class="sponsor-logo">Infinite<span>Loop</span></div>
+          <div class="sponsor-tagline">"The official coffee of 'just one more compile'."</div>
+        </article>
+        <article class="sponsor-card" tabindex="0" aria-label="Stack Overflow sponsor">
+          <div class="sponsor-logo">Stack<span>Overflow</span></div>
+          <div class="sponsor-tagline">"Our Official Copypasta Partner."</div>
+        </article>
+      </div>
     </section>
-    
+
     <!-- FAQ Section -->
-    <section id="faq">
-        <div class="section-header">
-            <h2>Frequently Avoided Questions (FAQ)</h2>
-        </div>
-        <div class="faq-container">
-            <details class="faq-details">
-                <summary>Will I see my family again?</summary>
-                <div class="faq-content">The Articles of Competition allow for one (1) pre-approved 5-minute video call upon successful completion of Chapter 5. Subsequent communication is not guaranteed.</div>
-            </details>
-            <details class="faq-details">
-                <summary>What is the official policy on crying?</summary>
-                <div class="faq-content">Crying is permitted, but please use a spill-proof keyboard. Damaged hardware due to saline contamination is not covered.</div>
-            </details>
-            <details class="faq-details">
-                <summary>What if I format my primary hard drive?</summary>
-                <div class="faq-content">This is not a bug, but a feature designed to test your data backup strategies. No extensions will be granted. We consider it an advanced lesson in 'consequence management'.</div>
-            </details>
-        </div>
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="section-header">
+        <h2 id="faq-title">Frequently Avoided Questions (FAQ)</h2>
+      </div>
+      <div class="faq-container">
+        <details class="faq-details">
+          <summary>Will I see my family again?</summary>
+          <div class="faq-content">The Articles of Competition allow for one (1) pre-approved 5-minute video call upon successful completion of Chapter 5. Subsequent communication is not guaranteed.</div>
+        </details>
+        <details class="faq-details">
+          <summary>What is the official policy on crying?</summary>
+          <div class="faq-content">Crying is permitted, but please use a spill-proof keyboard. Damaged hardware due to saline contamination is not covered.</div>
+        </details>
+        <details class="faq-details">
+          <summary>What if I format my primary hard drive?</summary>
+          <div class="faq-content">This is not a bug, but a feature designed to test your data backup strategies. No extensions will be granted. We consider it an advanced lesson in 'consequence management'.</div>
+        </details>
+      </div>
     </section>
 
     <!-- Hidden Kernel Panic Trigger -->
-    <section id="easter-egg-section">
-        <div class="section-header">
-            <h2>SYSTEM INTEGRITY</h2>
+    <section id="easter-egg-section" aria-labelledby="integrity-title">
+      <div class="section-header">
+        <h2 id="integrity-title">SYSTEM INTEGRITY</h2>
+      </div>
+      <div class="system-status">
+        <div class="status-item">
+          <div class="status-label">CORE SYSTEMS</div>
+          <div class="status-value">OPERATIONAL</div>
         </div>
-        <div class="system-status">
-            <div class="status-item"><div class="status-label">CORE SYSTEMS</div><div class="status-value">OPERATIONAL</div></div>
-            <div class="status-item"><div class="status-label">SECURITY PROTOCOLS</div><div class="status-value">ACTIVE</div></div>
-            <div class="status-item">
-                <div class="status-label">EMERGENCY OVERRIDE</div>
-                <div id="kernel-panic-trigger" class="status-value" data-terminal-info="root@lfs:~# Don't. Just don't."><span class="bracket">[</span> ENGAGE <span class="bracket">]</span></div>
-            </div>
+        <div class="status-item">
+          <div class="status-label">SECURITY PROTOCOLS</div>
+          <div class="status-value">ACTIVE</div>
         </div>
+        <div class="status-item">
+          <div class="status-label">EMERGENCY OVERRIDE</div>
+          <p id="kernel-panic-desc" class="sr-only">Triggers a simulated kernel panic and page reload</p>
+          <button id="kernel-panic-trigger" class="status-value" type="button" aria-describedby="kernel-panic-desc" data-terminal-info="root@lfs:~# Don't. Just don't."><span class="bracket">[</span> ENGAGE <span class="bracket">]</span></button>
+        </div>
+      </div>
     </section>
+  </main>
 
-    <!-- Participant Profiles Modal -->
-    <div id="profile-modal" class="modal">
-        <div class="modal-content profile-modal-content">
-            <div class="modal-close">×</div>
-            <div class="profile-data-container"></div>
-        </div>
+  <!-- Participant Profiles Modal -->
+  <div id="profile-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" aria-hidden="true">
+    <div class="modal-content profile-modal-content" tabindex="-1">
+      <button class="modal-close" type="button" aria-label="Close profile modal">×</button>
+      <h3 id="profile-modal-title" class="sr-only">Participant Profile</h3>
+      <div class="profile-data-container"></div>
     </div>
-    
-    <!-- Rules Modal -->
-    <div id="rules-modal" class="modal">
-        <div class="modal-content rules-modal-content">
-            <div class="modal-close">×</div>
-            <div class="rules-modal-header">
-                <h3>ARTICLES OF COMPETITION</h3>
-                <p>DOCUMENT ID: LFSGC-7.9 // CLASSIFICATION: PUBLIC</p>
-            </div>
-            <div class="rules-modal-body">
-                <h4>PREAMBLE</h4>
-                <p>This document outlines the irrevocable and non-negotiable statutes governing The Grandmaster Sanction. Participation constitutes unconditional acceptance of these terms. Ignorance of any article herein does not excuse non-compliance.</p>
-                <h4>ARTICLE I: SOVEREIGNTY OF EFFORT</h4>
-                <p>The Participant shall undertake this challenge in absolute solitude. No collaboration, consultation, or use of pre-written scripts is permitted. The Participant's sanity, or lack thereof, must be entirely their own.</p>
-                <h4>ARTICLE II: THE ARENA</h4>
-                <p>The build must be on a physical partition. Virtual Machines, containers, and any form of abstraction designed to protect the user from consequences are expressly forbidden. True masters face reality.</p>
-                <h4>ARTICLE III: ACCEPTANCE OF RISK</h4>
-                <p>The Participant acknowledges inherent risks, including: data loss, hardware damage, sleep deprivation, and a profound hatred for compilers. The organizer assumes zero liability.</p>
-                <h4>ARTICLE IV: THE VERIFICATION PROTOCOL</h4>
-                <p>To claim victory, a Participant must submit to a live audit including a cold boot, system demonstration, and a technical interrogation. Failure to explain one's own work is grounds for disqualification.</p>
-                <h4>ARTICLE V: THE FINALITY CLAUSE</h4>
-                <p>The organizer's judgment on all matters is final, absolute, and not subject to appeal, review, or complaint.</p>
-            </div>
-        </div>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="rules-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="rules-modal-title" aria-hidden="true">
+    <div class="modal-content rules-modal-content" tabindex="-1">
+      <button class="modal-close" type="button" aria-label="Close rules modal">×</button>
+      <div class="rules-modal-header">
+        <h3 id="rules-modal-title">ARTICLES OF COMPETITION</h3>
+        <p>DOCUMENT ID: LFSGC-7.9 // CLASSIFICATION: PUBLIC</p>
+      </div>
+      <div class="rules-modal-body">
+        <h4>PREAMBLE</h4>
+        <p>This document outlines the irrevocable and non-negotiable statutes governing The Grandmaster Sanction. Participation constitutes unconditional acceptance of these terms. Ignorance of any article herein does not excuse non-compliance.</p>
+        <h4>ARTICLE I: SOVEREIGNTY OF EFFORT</h4>
+        <p>The Participant shall undertake this challenge in absolute solitude. No collaboration, consultation, or use of pre-written scripts is permitted. The Participant's sanity, or lack thereof, must be entirely their own.</p>
+        <h4>ARTICLE II: THE ARENA</h4>
+        <p>The build must be on a physical partition. Virtual Machines, containers, and any form of abstraction designed to protect the user from consequences are expressly forbidden. True masters face reality.</p>
+        <h4>ARTICLE III: ACCEPTANCE OF RISK</h4>
+        <p>The Participant acknowledges inherent risks, including: data loss, hardware damage, sleep deprivation, and a profound hatred for compilers. The organizer assumes zero liability.</p>
+        <h4>ARTICLE IV: THE VERIFICATION PROTOCOL</h4>
+        <p>To claim victory, a Participant must submit to a live audit including a cold boot, system demonstration, and a technical interrogation. Failure to explain one's own work is grounds for disqualification.</p>
+        <h4>ARTICLE V: THE FINALITY CLAUSE</h4>
+        <p>The organizer's judgment on all matters is final, absolute, and not subject to appeal, review, or complaint.</p>
+      </div>
     </div>
+  </div>
 
-    <!-- Kernel Panic Screen (initially hidden) -->
-    <div id="kernel-panic">
-        <div class="panic-content">
-            <div class="glitch-text" data-text="KERNEL PANIC">KERNEL PANIC</div>
-            <div class="error-details">
-                <p>CRITICAL FAILURE: Participant motivation not found</p>
-                <p>at Object.compile (motivation.js:404)</p>
-                <p>at LifeChoices.makeGoodDecisions (dreams.js:0)</p>
-            </div>
-            <div class="reboot-message">SYSTEM WILL REBOOT IN <span id="countdown">5</span></div>
-        </div>
+  <!-- Kernel Panic Screen -->
+  <div id="kernel-panic" aria-hidden="true">
+    <div class="panic-content">
+      <div class="glitch-text" data-text="KERNEL PANIC">KERNEL PANIC</div>
+      <div class="error-details">
+        <p>CRITICAL FAILURE: Participant motivation not found</p>
+        <p>at Object.compile (motivation.js:404)</p>
+        <p>at LifeChoices.makeGoodDecisions (dreams.js:0)</p>
+      </div>
+      <div class="reboot-message">SYSTEM WILL REBOOT IN <span id="countdown">5</span></div>
     </div>
+  </div>
 
-    <!-- Footer -->
-    <footer id="fine-print">
-        <p class="disclaimer"><strong>Disclaimer:</strong> This entire website and the "challenge" it describes are a satirical joke. All participant data, progress, and statistics are fictional. The prize money is, unfortunately, not real.<br><strong>*Prize Payout Fine Print:</strong> Prize will be paid out in 100 million equal installments of one cent over 10,000 years, subject to a 99.9% 'Cosmic Inconvenience' tax.</p>
-        <p class="credit">Crafted by Anirudh Gupta in collaboration with an AI.</p>
-    </footer>
+  <!-- Footer -->
+  <footer id="fine-print" aria-labelledby="fine-print-title">
+    <h2 id="fine-print-title" class="sr-only">Fine print</h2>
+    <p class="disclaimer"><strong>Disclaimer:</strong> This entire website and the "challenge" it describes are a satirical joke. All participant data, progress, and statistics are fictional. The prize money is, unfortunately, not real.<br><strong>*Prize Payout Fine Print:</strong> Prize will be paid out in 100 million equal installments of one cent over 10,000 years, subject to a 99.9% 'Cosmic Inconvenience' tax.</p>
+    <p class="credit">Crafted by Anirudh Gupta in collaboration with an AI.</p>
+  </footer>
 
-    <script>
-        // Store participant data in a single, reliable source of truth.
-        const participants = [
-            { name: "Anirudh Gupta", stage: "2/250", stageLabel: "Rereading the Foreword", progressPercent: 0.8, status: "stalled", statusText: "Distracted by TikTok", lastTransmission: `"It's just following instructions, right?"`, psychStatus: "Calmly accepting his fate.", profile: { avatar: "AG", bio: "Greatly overestimated his patience.", stats: [{ label: "Lines Read", value: "42" }, { label: "Coffee Consumed", value: "17 cups" }, { label: "Existential Crises", value: "8" }]}},
-            { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", lastTransmission: `"Maybe I'll just use Arch."`, psychStatus: "Currently in a state of denial.", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }]}},
-            { name: "Tathya Gohil", stage: "8/250", stageLabel: "Pretending to Progress", progressPercent: 3.2, status: "active", statusText: "Actively procrastinating", lastTransmission: `"The compiler and I have creative differences."`, psychStatus: "Has started referring to GCC as 'My Nemesis'.", profile: { avatar: "TG", bio: "The only one who actually read the introduction.", stats: [{ label: "Terminal Tabs Open", value: "23" }, { label: "Spreadsheets Made", value: "4" }, { label: "Actual Progress", value: "1%" }]}},
-            { name: "Kalp", stage: "0/250", stageLabel: "Still Installing Linux", progressPercent: 0, status: "error", statusText: "Dual-boot gone wrong", lastTransmission: `"Wait, which drive is /dev/sda?"`, psychStatus: "Blaming the hardware.", profile: { avatar: "K", bio: "Still trying to install regular Linux.", stats: [{ label: "OSes Broken", value: "2" }, { label: "Data Lost", value: "All of it" }, { label: "GRUB Errors", value: "∞" }]}},
-            { name: "Lakshya", stage: "15/250", stageLabel: "Compile Error #342", progressPercent: 6, status: "active", statusText: "Debugging sanity", lastTransmission: `"The error messages are speaking to me now."`, psychStatus: "Believes the error messages are speaking to him.", profile: { avatar: "L", bio: "Has gotten furthest, which isn't saying much.", stats: [{ label: "Packages Built", value: "3" }, { label: "Error Messages", value: "2,417" }, { label: "Hair Lost", value: "73%" }]}},
-            { name: "Ansh", stage: "1/250", stageLabel: "Reading Prerequisites", progressPercent: 0.4, status: "stalled", statusText: "Left on read", lastTransmission: `"I'm sure there's a YouTube tutorial..."`, psychStatus: "Researching alternative hobbies.", profile: { avatar: "A", bio: "Joined due to peer pressure. Regrets everything.", stats: [{ label: "Pages Read", value: "3" }, { label: "Confusion Level", value: "Max" }, { label: "Excuses Made", value: "27" }]}}
-        ];
+  <script defer>
+    // Single source of truth: participants
+    const participants = [
+      { name: "Anirudh Gupta", stage: "2/250", stageLabel: "Rereading the Foreword", progressPercent: 0.8, status: "stalled", statusText: "Distracted by TikTok", lastTransmission: `"It's just following instructions, right?"`, psychStatus: "Calmly accepting his fate.", profile: { avatar: "AG", bio: "Greatly overestimated his patience.", stats: [{ label: "Lines Read", value: "42" }, { label: "Coffee Consumed", value: "17 cups" }, { label: "Existential Crises", value: "8" }]}},
+      { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", lastTransmission: `"Maybe I'll just use Arch."`, psychStatus: "Currently in a state of denial.", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }] }}
+      ,
+      { name: "Tathya Gohil", stage: "8/250", stageLabel: "Pretending to Progress", progressPercent: 3.2, status: "active", statusText: "Actively procrastinating", lastTransmission: `"The compiler and I have creative differences."`, psychStatus: "Has started referring to GCC as 'My Nemesis'.", profile: { avatar: "TG", bio: "The only one who actually read the introduction.", stats: [{ label: "Terminal Tabs Open", value: "23" }, { label: "Spreadsheets Made", value: "4" }, { label: "Actual Progress", value: "1%" }] }},
+      { name: "Kalp", stage: "0/250", stageLabel: "Still Installing Linux", progressPercent: 0, status: "error", statusText: "Dual-boot gone wrong", lastTransmission: `"Wait, which drive is /dev/sda?"`, psychStatus: "Blaming the hardware.", profile: { avatar: "K", bio: "Still trying to install regular Linux.", stats: [{ label: "OSes Broken", value: "2" }, { label: "Data Lost", value: "All of it" }, { label: "GRUB Errors", value: "∞" }] }},
+      { name: "Lakshya", stage: "15/250", stageLabel: "Compile Error #342", progressPercent: 6, status: "active", statusText: "Debugging sanity", lastTransmission: `"The error messages are speaking to me now."`, psychStatus: "Believes the error messages are speaking to him.", profile: { avatar: "L", bio: "Has gotten furthest, which isn't saying much.", stats: [{ label: "Packages Built", value: "3" }, { label: "Error Messages", value: "2,417" }, { label: "Hair Lost", value: "73%" }] }},
+      { name: "Ansh", stage: "1/250", stageLabel: "Reading Prerequisites", progressPercent: 0.4, status: "stalled", statusText: "Left on read", lastTransmission: `"I'm sure there's a YouTube tutorial..."`, psychStatus: "Researching alternative hobbies.", profile: { avatar: "A", bio: "Joined due to peer pressure. Regrets everything.", stats: [{ label: "Pages Read", value: "3" }, { label: "Confusion Level", value: "Max" }, { label: "Excuses Made", value: "27" }]}}
+    ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            gsap.registerPlugin(ScrollTrigger);
+    const prefersReducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            // --- RENDER FUNCTIONS ---
-            function renderLeaderboard() {
-                const dashboard = document.querySelector('.dashboard');
-                dashboard.innerHTML = '';
-                participants.forEach((p, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'participant-card';
-                    card.dataset.participantIndex = index;
-                    card.innerHTML = `
-                        <div class="status-indicator" data-terminal-info="STATUS: ${p.statusText}"><div class="status-dot ${p.status}"></div><div class="status-text">${p.statusText}</div></div>
-                        <h3 class="participant-name">${p.name}</h3>
-                        <div class="participant-details">
-                            <div class="detail-row"><div class="detail-label">Stage</div><div class="detail-value">${p.stage}</div></div>
-                            <div class="detail-row"><div class="detail-label">Current Task</div><div class="detail-value">${p.stageLabel}</div></div>
-                        </div>
-                        <p class="last-transmission">${p.lastTransmission}</p>
-                        <div class="progress-bar-container"><div class="progress-bar"></div></div>
-                    `;
-                    dashboard.appendChild(card);
-                });
-            }
+    // Utilities
+    const qs = (sel, ctx = document) => ctx.querySelector(sel);
+    const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-            function renderProfileModal(participant) {
-                const container = document.getElementById('profile-modal');
-                container.querySelector('.profile-data-container').innerHTML = `
-                    <div class="profile-header">
-                        <div class="profile-avatar">${participant.profile.avatar}</div>
-                        <div class="profile-title">
-                            <h3 class="participant-name">${participant.name}</h3>
-                            <p class="profile-bio">${participant.profile.bio}</p>
-                            <div class="psych-status">// PSYCH_EVAL: ${participant.psychStatus}</div>
-                        </div>
-                    </div>
-                    <div class="profile-stats">
-                        ${participant.profile.stats.map(stat => `<div class="stat-card"><h4 class="stat-value">${stat.value}</h4><p class="stat-label">${stat.label}</p></div>`).join('')}
-                    </div>
-                `;
-            }
+    // Leaderboard render
+    function renderLeaderboard() {
+      const dashboard = qs('.dashboard');
+      dashboard.innerHTML = '';
+      participants.forEach((p, index) => {
+        const card = document.createElement('article');
+        card.className = 'participant-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'listitem');
+        card.dataset.participantIndex = index;
+        card.innerHTML = `
+          <div class="status-indicator" data-terminal-info="STATUS: ${p.statusText}"><div class="status-dot ${p.status}"></div><div class="status-text">${p.statusText}</div></div>
+          <h3 class="participant-name">${p.name}</h3>
+          <div class="participant-details">
+            <div class="detail-row"><div class="detail-label">Stage</div><div class="detail-value">${p.stage}</div></div>
+            <div class="detail-row"><div class="detail-label">Current Task</div><div class="detail-value">${p.stageLabel}</div></div>
+          </div>
+          <p class="last-transmission">${p.lastTransmission}</p>
+          <div class="progress-bar-container"><div class="progress-bar" style="width: 0"></div></div>
+        `;
+        dashboard.appendChild(card);
+      });
+    }
 
-            // --- ANIMATION & EVENT BINDING ---
-            function initAnimations() {
-                document.body.classList.add('loaded');
-                gsap.from(".hero-badge, .hero-title, .hero-subtitle, .hero-organizer, .prize-amount, .hero-description", { opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.5 });
-                gsap.from("#terminal", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 1.5 });
-                gsap.to(".hero-grid", { rotationX: 40, duration: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    function renderProfileModal(participant) {
+      const container = qs('#profile-modal .profile-data-container');
+      container.innerHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar" aria-hidden="true">${participant.profile.avatar}</div>
+          <div class="profile-title">
+            <h3 class="participant-name">${participant.name}</h3>
+            <p class="profile-bio">${participant.profile.bio}</p>
+            <div class="psych-status">// PSYCH_EVAL: ${participant.psychStatus}</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          ${participant.profile.stats.map(stat => `
+            <div class="stat-card" aria-label="${stat.label}">
+              <h4 class="stat-value">${stat.value}</h4>
+              <p class="stat-label">${stat.label}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
 
-                const sections = ['#about-lfs', '#leaderboard', '#rules', '#sponsors', '#faq', '#easter-egg-section', 'footer'];
-                sections.forEach(sec => {
-                    gsap.from(sec, { opacity: 0, y: 30, duration: 1, scrollTrigger: { trigger: sec, start: "top 85%", toggleActions: "play none none none" }});
-                });
+    // Animations + GSAP guards
+    function initAnimations() {
+      document.body.classList.add('loaded');
 
-                document.querySelectorAll('.participant-card').forEach((card, index) => {
-                    gsap.to(card.querySelector('.progress-bar'), { width: `${participants[index].progressPercent}%`, scrollTrigger: { trigger: card, start: "top 85%" } });
-                });
-            }
-
-            async function typeOutBriefing() {
-                const briefingTerminal = document.getElementById('briefing-terminal');
-                const lines = [
-                    { text: "$ connect --to=lfs_mainframe", type: 'command' },
-                    { text: "... CONNECTION ESTABLISHED.", type: 'output', delay: 500 },
-                    { text: "$ run get_challenge_briefing", type: 'command' },
-                    { text: "> The challenge is based on <span class='highlight'>Linux From Scratch</span>. It is a rigorous, educational, and often soul-crushing journey.", type: 'output', delay: 1000 },
-                    { text: "$ ./calculate_success_probability --participants=all", type: 'command' },
-                    { text: "> Probability: <span class='warning'>0.001%</span>", type: 'output', delay: 500 },
-                    { type: 'link' }
-                ];
-                
-                for (const line of lines) {
-                    await new Promise(resolve => setTimeout(resolve, line.delay || 200));
-                    if (line.type === 'link') {
-                        briefingTerminal.innerHTML += `<a href="https://www.linuxfromscratch.org/lfs/" target="_blank" class="command-prompt-link">> Read The Sacred Texts<span class="cursor"></span></a>`;
-                    } else {
-                        briefingTerminal.innerHTML += `<span class="line ${line.type}">${line.text}</span>`;
-                    }
-                }
-            }
-            
-            function initTerminal() {
-                const terminalBody = document.getElementById('terminal-output');
-                const messages = [
-                    {text: "Checking for signs of life..."},
-                    {text: "> WARNING: None found.", delay: 1500},
-                    {text: "Running motivation.sh...", delay: 3000},
-                    {text: "> ERROR: Script failed. Exit code 1.", delay: 1500},
-                    {text: "Re-evaluating life choices...", delay: 2500}
-                ];
-                let msgIndex = 0;
-                
-                function typeMessage() {
-                    const line = document.createElement('div');
-                    line.className = 'line';
-                    line.textContent = messages[msgIndex].text;
-                    terminalBody.innerHTML = '';
-                    terminalBody.appendChild(line);
-                    
-                    const currentDelay = messages[msgIndex].delay || 2000;
-                    msgIndex = (msgIndex + 1) % messages.length;
-                    
-                    setTimeout(typeMessage, currentDelay);
-                }
-                setTimeout(typeMessage, 2000);
-            }
-
-            function initModals() {
-                const profileModal = document.getElementById('profile-modal');
-                const rulesModal = document.getElementById('rules-modal');
-
-                // Profile Modal Logic
-                document.querySelector('.dashboard').addEventListener('click', (e) => {
-                    const card = e.target.closest('.participant-card');
-                    if (card) {
-                        renderProfileModal(participants[card.dataset.participantIndex]);
-                        profileModal.style.display = 'flex';
-                        setTimeout(() => profileModal.classList.add('visible'), 10);
-                        document.body.style.overflow = 'hidden';
-                    }
-                });
-
-                // Rules Modal Logic
-                document.getElementById('rules-trigger').addEventListener('click', () => {
-                    rulesModal.style.display = 'flex';
-                    setTimeout(() => rulesModal.classList.add('visible'), 10);
-                    document.body.style.overflow = 'hidden';
-                });
-                
-                // Generic close logic for all modals
-                document.body.addEventListener('click', (e) => {
-                    if (e.target.matches('.modal-close')) {
-                        const modal = e.target.closest('.modal');
-                        modal.classList.remove('visible');
-                        setTimeout(() => { modal.style.display = 'none' }, 300);
-                        document.body.style.overflow = '';
-                    }
-                });
-            }
-
-            function initKernelPanic() {
-                const trigger = document.getElementById('kernel-panic-trigger');
-                const panicScreen = document.getElementById('kernel-panic');
-                const glitchText = panicScreen.querySelector('.glitch-text');
-
-                trigger.addEventListener('click', () => {
-                    panicScreen.style.display = 'flex';
-                    setTimeout(() => panicScreen.classList.add('active'), 10);
-                    
-                    // Glitch animation
-                    const originalText = glitchText.dataset.text;
-                    const chars = "!<>-_\\/[]{}—=+*^?#";
-                    let interval = null;
-                    
-                    const scramble = () => {
-                        glitchText.textContent = originalText
-                            .split("")
-                            .map(letter => (Math.random() > 0.7) ? chars[Math.floor(Math.random() * chars.length)] : letter)
-                            .join("");
-                    };
-                    
-                    interval = setInterval(scramble, 50);
-                    setTimeout(() => {
-                        clearInterval(interval);
-                        glitchText.textContent = originalText;
-                    }, 1000);
-
-                    // Countdown
-                    let countdown = 5;
-                    const countdownEl = document.getElementById('countdown');
-                    countdownEl.textContent = countdown;
-                    const countdownInterval = setInterval(() => {
-                        countdown--;
-                        countdownEl.textContent = countdown;
-                        if (countdown <= 0) {
-                            clearInterval(countdownInterval);
-                            window.location.reload();
-                        }
-                    }, 1000);
-                });
-            }
-            
-            // --- MAIN EXECUTION ---
-            renderLeaderboard();
-            initAnimations();
-            typeOutBriefing();
-            initTerminal();
-            initModals();
-            initKernelPanic();
+      if (prefersReducedMotion() || !window.gsap) {
+        // Set immediate widths for progress bars if no GSAP or reduced motion
+        qsa('.participant-card').forEach((card, i) => {
+          qs('.progress-bar', card).style.width = `${participants[i].progressPercent}%`;
         });
-    </script>
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.from(".hero-badge, .hero-title, .hero-subtitle, .hero-organizer, .prize-amount, .hero-description", {
+        opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.3
+      });
+      gsap.from("#terminal", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out", delay: 0.8 });
+      gsap.to(".hero-grid", { rotationX: 40, duration: 20, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+      const sections = ['#about-lfs', '#leaderboard', '#rules', '#sponsors', '#faq', '#easter-egg-section', 'footer'];
+      sections.forEach(sec => {
+        gsap.from(sec, { opacity: 0, y: 30, duration: 1, scrollTrigger: { trigger: sec, start: "top 85%", toggleActions: "play none none none" }});
+      });
+
+      qsa('.participant-card').forEach((card, index) => {
+        gsap.to(qs('.progress-bar', card), { width: `${participants[index].progressPercent}%`, scrollTrigger: { trigger: card, start: "top 85%" } });
+      });
+    }
+
+    async function typeOutBriefing() {
+      const briefingTerminal = qs('#briefing-terminal');
+      const lines = [
+        { text: "$ connect --to=lfs_mainframe", type: 'command' },
+        { text: "... CONNECTION ESTABLISHED.", type: 'output', delay: 500 },
+        { text: "$ run get_challenge_briefing", type: 'command' },
+        { text: "> The challenge is based on <span class='highlight'>Linux From Scratch</span>. It is a rigorous, educational, and often soul-crushing journey.", type: 'output', delay: 1000 },
+        { text: "$ ./calculate_success_probability --participants=all", type: 'command' },
+        { text: "> Probability: <span class='warning'>0.001%</span>", type: 'output', delay: 500 },
+        { type: 'link' }
+      ];
+
+      for (const line of lines) {
+        await new Promise(r => setTimeout(r, line.delay || 200));
+        if (line.type === 'link') {
+          briefingTerminal.insertAdjacentHTML('beforeend', `<a href="https://www.linuxfromscratch.org/lfs/" target="_blank" rel="noopener noreferrer" class="command-prompt-link">> Read The Sacred Texts<span class="cursor"></span></a>`);
+        } else {
+          briefingTerminal.insertAdjacentHTML('beforeend', `<span class="line ${line.type}">${line.text}</span>`);
+        }
+      }
+    }
+
+    function initTerminal() {
+      const terminalBody = qs('#terminal-output');
+      terminalBody.setAttribute('aria-live', 'polite');
+
+      const messages = [
+        {text: "Checking for signs of life..."},
+        {text: "> WARNING: None found.", delay: 1500},
+        {text: "Running motivation.sh...", delay: 3000},
+        {text: "> ERROR: Script failed. Exit code 1.", delay: 1500},
+        {text: "Re-evaluating life choices...", delay: 2500}
+      ];
+      let msgIndex = 0;
+
+      function typeMessage() {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.textContent = messages[msgIndex].text;
+        terminalBody.innerHTML = '';
+        terminalBody.appendChild(line);
+
+        const currentDelay = messages[msgIndex].delay || 2000;
+        msgIndex = (msgIndex + 1) % messages.length;
+        setTimeout(typeMessage, currentDelay);
+      }
+      setTimeout(typeMessage, 1500);
+    }
+
+    // Modal helpers (focus trap + accessibility)
+    const focusableSelector = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    let lastFocused = null;
+
+    function trapFocus(modal) {
+      const focusables = qsa(focusableSelector, modal);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      function handleTab(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+      modal.addEventListener('keydown', handleTab);
+      modal._untrap = () => modal.removeEventListener('keydown', handleTab);
+    }
+
+    function setMainInert(inert) {
+      // Keep it simple: hide from AT while modal open
+      const main = qs('main');
+      const header = qs('header');
+      [main, header].forEach(el => el && el.setAttribute('aria-hidden', inert ? 'true' : 'false'));
+    }
+
+    function openModal(modal) {
+      lastFocused = document.activeElement;
+      modal.style.display = 'flex';
+      setTimeout(() => modal.classList.add('visible'), 10);
+      modal.setAttribute('aria-hidden', 'false');
+      setMainInert(true);
+      const content = qs('.modal-content', modal);
+      content && content.focus();
+      trapFocus(modal);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modal) {
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+      if (modal._untrap) modal._untrap();
+      setTimeout(() => { modal.style.display = 'none'; }, 300);
+      setMainInert(false);
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    function initModals() {
+      const profileModal = qs('#profile-modal');
+      const rulesModal = qs('#rules-modal');
+
+      // Open profile on card click or Enter
+      qs('.dashboard').addEventListener('click', (e) => {
+        const card = e.target.closest('.participant-card');
+        if (card) {
+          renderProfileModal(participants[card.dataset.participantIndex]);
+          openModal(profileModal);
+        }
+      });
+      qs('.dashboard').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const card = e.target.closest('.participant-card');
+          if (card) {
+            renderProfileModal(participants[card.dataset.participantIndex]);
+            openModal(profileModal);
+          }
+        }
+      });
+
+      // Open rules
+      qs('#rules-trigger').addEventListener('click', () => openModal(rulesModal));
+
+      // Close on close button
+      document.body.addEventListener('click', (e) => {
+        if (e.target.matches('.modal-close')) {
+          closeModal(e.target.closest('.modal'));
+        }
+        // Click outside (overlay)
+        if (e.target.classList.contains('modal')) {
+          closeModal(e.target);
+        }
+      });
+
+      // ESC to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          [profileModal, rulesModal].forEach(m => {
+            if (m.classList.contains('visible')) closeModal(m);
+          });
+        }
+      });
+    }
+
+    function initKernelPanic() {
+      const trigger = qs('#kernel-panic-trigger');
+      const panicScreen = qs('#kernel-panic');
+      const glitchText = panicScreen.querySelector('.glitch-text');
+
+      trigger.addEventListener('click', () => {
+        panicScreen.style.display = 'flex';
+        panicScreen.setAttribute('aria-hidden', 'false');
+        setTimeout(() => panicScreen.classList.add('active'), 10);
+
+        // Glitch animation
+        const originalText = glitchText.dataset.text;
+        const chars = "!<>-_\\/[]{}—=+*^?#";
+        const scramble = () => {
+          glitchText.textContent = originalText
+            .split("")
+            .map(letter => (Math.random() > 0.7) ? chars[Math.floor(Math.random() * chars.length)] : letter)
+            .join("");
+        };
+        const interval = setInterval(scramble, 50);
+        setTimeout(() => {
+          clearInterval(interval);
+          glitchText.textContent = originalText;
+        }, 1000);
+
+        // Countdown
+        let countdown = 5;
+        const countdownEl = qs('#countdown');
+        countdownEl.textContent = countdown;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          countdownEl.textContent = countdown;
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            window.location.reload();
+          }
+        }, 1000);
+      });
+    }
+
+    function initLastUpdatedTicker() {
+      const el = qs('#last-updated');
+      let start = Date.now();
+      function update() {
+        const secs = Math.floor((Date.now() - start) / 1000);
+        if (secs < 5) el.textContent = 'Just now';
+        else if (secs < 60) el.textContent = `${secs}s ago`;
+        else el.textContent = `${Math.floor(secs/60)}m ago`;
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    // MAIN
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLeaderboard();
+      initAnimations();
+      typeOutBriefing();
+      initTerminal();
+      initModals();
+      initKernelPanic();
+      initLastUpdatedTicker();
+    });
+  </script>
 </body>
 </html>
