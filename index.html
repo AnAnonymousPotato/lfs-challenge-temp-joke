@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,29 +36,80 @@
   </noscript>
 
   <style>
-    /* ========== TOKENS ========== */
+    /* ========== THEME TOKENS + BASE ========== */
     :root {
-      --bg-primary: #0a0e17;
-      --bg-secondary: #111827;
-      --bg-tertiary: #1f2937;
-      --border-color: #263244; /* FIXED: previously undefined */
-      --text-primary: #f9fafb;
-      --text-secondary: #9ca3af;
-      --text-tertiary: #6b7280;
+      /* Let the UA pick form controls styling appropriately */
+      color-scheme: dark;
+      --radius-lg: 12px;
+      --radius-md: 8px;
+      --radius-sm: 6px;
+
       --accent-blue: #0ea5e9;
       --accent-purple: #8b5cf6;
       --accent-magenta: #ec4899;
       --accent-danger: #ef4444;
       --accent-success: #10b981;
       --accent-warning: #f59e0b;
+
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+      --space-xs: 0.375rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 2rem;
       --space-xl: 4rem;
+
+      --transition-fast: 0.2s ease;
       --transition-normal: 0.3s ease;
+
       --focus-ring: 2px dashed var(--accent-blue);
+
+      /* Default to dark (overridden by data-theme=light) */
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --border-color: #263244;
+      --text-primary: #f9fafb;
+      --text-secondary: #cfd5df;
+      --text-tertiary: #9aa3b2;
+
+      --header-bg: rgba(10, 14, 23, 0.7);
+      --grid-line-color: rgba(255, 255, 255, 0.04);
+      --hero-glow: radial-gradient(circle at center, rgba(14, 165, 233, 0.10), transparent 70%);
+
+      --shadow-1: 0 0 20px rgba(14, 165, 233, 0.15);
+      --shadow-2: 0 10px 30px rgba(0,0,0,0.35);
+
+      --terminal-bg: rgba(0,0,0,0.8);
+      --glass-stroke: rgba(255,255,255,0.08);
+
+      --ring: 0 0 0 3px rgba(14,165,233,0.35);
+    }
+
+    /* Light theme overrides */
+    [data-theme="light"] {
+      color-scheme: light;
+
+      --bg-primary: #f8fafc;            /* slate-50 */
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e8edf3;           /* soft slate */
+      --border-color: #d1d5db;          /* gray-300 */
+      --text-primary: #0f172a;          /* slate-900 */
+      --text-secondary: #334155;        /* slate-700 */
+      --text-tertiary: #64748b;         /* slate-500 */
+
+      --header-bg: rgba(255, 255, 255, 0.7);
+      --grid-line-color: rgba(0, 0, 0, 0.06);
+      --hero-glow: radial-gradient(circle at center, rgba(14, 165, 233, 0.08), transparent 70%);
+
+      --shadow-1: 0 0 20px rgba(14, 165, 233, 0.20);
+      --shadow-2: 0 10px 30px rgba(2,6,23,0.10);
+
+      --terminal-bg: rgba(255,255,255,0.92);
+      --glass-stroke: rgba(0,0,0,0.08);
+
+      --ring: 0 0 0 3px rgba(14,165,233,0.45);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,9 +120,10 @@
       font-family: var(--font-sans);
       line-height: 1.6;
       overflow-x: hidden;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
     }
     /* Animate in only when JS is available */
-    html.js body { opacity: 0; transition: opacity 1s ease; }
+    html.js body { opacity: 0; transition: opacity 0.8s ease; }
     html.js body.loaded { opacity: 1; }
 
     a { color: inherit; text-decoration: none; }
@@ -94,18 +146,22 @@
       background: var(--bg-tertiary); color: var(--text-primary);
       padding: 0.5rem 1rem; transform: translateY(-120%);
       transition: transform 0.2s ease; z-index: 999;
+      border: 1px solid var(--glass-stroke);
+      border-bottom-right-radius: var(--radius-md);
     }
     .skip-link:focus { transform: translateY(0); }
 
     header {
       position: sticky; top: 0; z-index: 5;
-      background: rgba(10, 14, 23, 0.7);
+      background: var(--header-bg);
       backdrop-filter: blur(6px);
       border-bottom: 1px solid var(--border-color);
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
     .nav {
       max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
       padding: var(--space-md) var(--space-lg);
+      gap: 1rem;
     }
     .brand { font-family: var(--font-mono); letter-spacing: 1px; color: var(--text-secondary); }
     .nav a {
@@ -114,7 +170,82 @@
       border-radius: 6px;
       transition: color var(--transition-normal), background var(--transition-normal);
     }
-    .nav a:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .nav a:hover { color: var(--text-primary); background: rgba(127,127,127,0.08); }
+    .nav a.active { color: var(--accent-blue); background: rgba(14,165,233,0.12); }
+
+    /* Theme Toggle - "VOID ↔ DAWN" Orbital switch */
+    .controls { display: flex; align-items: center; gap: 0.75rem; }
+    .theme-toggle {
+      --w: 74px; --h: 36px;
+      position: relative; width: var(--w); height: var(--h); border-radius: 999px;
+      border: 1px solid var(--glass-stroke);
+      background:
+        radial-gradient(18px 18px at 18px 50%, rgba(255,255,255,0.15), transparent 60%),
+        linear-gradient(90deg, rgba(14,165,233,0.3), rgba(139,92,246,0.35));
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2), var(--shadow-2);
+      cursor: pointer; padding: 2px; transition: transform var(--transition-fast), background var(--transition-normal);
+      display: inline-flex; align-items: center;
+      isolation: isolate;
+    }
+    [data-theme="light"] .theme-toggle {
+      background:
+        radial-gradient(18px 18px at calc(100% - 18px) 50%, rgba(255,255,255,0.45), transparent 60%),
+        linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.08), var(--shadow-2);
+    }
+    .theme-toggle:active { transform: scale(0.98); }
+    .toggle-track {
+      position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+    }
+    .toggle-stars, .toggle-rays {
+      position: absolute; inset: 0; opacity: 0.8; pointer-events: none;
+      transition: opacity var(--transition-normal), transform var(--transition-normal);
+    }
+    /* tiny star field for dark side */
+    .toggle-stars {
+      background-image:
+        radial-gradient(1px 1px at 10% 30%, rgba(255,255,255,0.8), transparent 60%),
+        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,0.6), transparent 60%),
+        radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.6), transparent 60%);
+      filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
+      transform: translateX(0%);
+    }
+    /* sun rays for light side */
+    .toggle-rays {
+      background: conic-gradient(from 0deg, rgba(252,211,77,0.0), rgba(252,211,77,0.45), rgba(252,211,77,0.0) 35%);
+      mask: radial-gradient(circle at 75% 50%, transparent 20px, black 26px);
+      transform: translateX(-100%);
+    }
+    [data-theme="light"] .toggle-stars { transform: translateX(100%); opacity: 0.2; }
+    [data-theme="light"] .toggle-rays { transform: translateX(0%); opacity: 1; }
+
+    .toggle-knob {
+      position: relative; width: 32px; height: 32px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #dbeafe 35%, #93c5fd 100%);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 0 4px rgba(255,255,255,0.7);
+      transition: transform var(--transition-normal), background var(--transition-normal), box-shadow var(--transition-normal);
+      z-index: 1;
+      transform: translateX(2px);
+    }
+    /* moon crescent for dark */
+    .toggle-knob::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 65% 35%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.1) 45%, transparent 46%);
+      border-radius: 50%;
+      transition: opacity var(--transition-normal);
+      opacity: 0;
+    }
+    [data-theme="dark"] .toggle-knob { background: radial-gradient(circle at 35% 35%, #93c5fd 0%, #1e293b 45%, #0b1220 100%); }
+    [data-theme="dark"] .toggle-knob::before { opacity: 1; }
+    [data-theme="light"] .toggle-knob { transform: translateX(40px); }
+
+    .toggle-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem; letter-spacing: 1px; color: var(--text-tertiary);
+      user-select: none;
+    }
 
     .section-header {
       display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg);
@@ -151,6 +282,7 @@
       padding: 0.25rem 1rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
       letter-spacing: 1px; margin-bottom: var(--space-md); font-family: var(--font-mono);
       border: 1px solid var(--text-tertiary);
+      box-shadow: var(--shadow-2);
     }
     .hero-title {
       font-family: var(--font-mono);
@@ -173,14 +305,15 @@
       text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
       display: inline-block;
     }
+    [data-theme="light"] .prize-amount { text-shadow: 0 0 0 rgba(0,0,0,0); }
     .prize-asterisk { color: var(--accent-blue); font-weight: bold; text-decoration: none; }
     .hero-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
-    .hero-backdrop { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(14, 165, 233, 0.1), transparent 70%); z-index: 1; }
+    .hero-backdrop { position: absolute; inset: 0; background: var(--hero-glow); z-index: 1; }
     .hero-grid {
       position: absolute; inset: 0; z-index: 0; opacity: 0.2;
       background-image:
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
       background-size: 50px 50px;
       perspective: 1000px; transform-style: preserve-3d;
       transform: rotateX(45deg) scale(2);
@@ -199,7 +332,8 @@
       background-color: var(--bg-secondary);
       border: 1px solid var(--bg-tertiary);
       padding: var(--space-lg);
-      border-radius: 12px; font-family: var(--font-mono);
+      border-radius: var(--radius-lg); font-family: var(--font-mono);
+      box-shadow: var(--shadow-2);
     }
     .briefing-terminal .line { display: block; margin-bottom: 0.5rem; line-height: 1.5; }
     .briefing-terminal .command { color: var(--accent-success); }
@@ -232,8 +366,10 @@
     /* ========== FLOATING TERMINAL ========== */
     #terminal {
       position: fixed; bottom: 30px; right: 30px; width: 300px; height: 180px;
-      background-color: rgba(0, 0, 0, 0.8); border-radius: 8px; border: 1px solid var(--accent-blue);
+      background-color: var(--terminal-bg); border-radius: 8px; border: 1px solid var(--accent-blue);
       overflow: hidden; box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); z-index: 10;
+      backdrop-filter: blur(6px);
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
     .terminal-header { display: flex; align-items: center; padding: 0.25rem 0.5rem; background-color: var(--bg-tertiary); }
     .terminal-buttons { display: flex; gap: 6px; margin-right: 0.5rem; }
@@ -252,11 +388,12 @@
     .participant-card {
       background-color: var(--bg-secondary); border-radius: 12px; padding: var(--space-lg);
       position: relative; border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-      cursor: pointer; overflow: hidden;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal), background-color var(--transition-normal);
+      cursor: pointer; overflow: hidden; box-shadow: var(--shadow-2);
     }
+    [data-theme="light"] .participant-card { border-color: rgba(2, 6, 23, 0.05); }
     .participant-card:hover,
-    .participant-card:focus-within { transform: translateY(-5px); border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(14,165,233,0.15); }
+    .participant-card:focus-within { transform: translateY(-5px); border-color: var(--accent-blue); box-shadow: var(--shadow-1); }
     .participant-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); opacity: 0.7; }
     .participant-name { font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 0.5rem; }
     .last-transmission { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); border-left: 2px solid var(--text-tertiary); padding-left: 0.5rem; margin-top: 1rem; font-style: italic; }
@@ -279,7 +416,7 @@
       background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary);
       padding: var(--space-lg); border-radius: 12px;
       transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-      flex-basis: 300px;
+      flex-basis: 300px; box-shadow: var(--shadow-2);
     }
     .sponsor-card:hover,
     .sponsor-card:focus-within {
@@ -296,7 +433,7 @@
 
     /* ========== FAQ ========== */
     .faq-container { max-width: 800px; margin: 0 auto; }
-    .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); }
+    .faq-details { margin-bottom: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: 12px; transition: all var(--transition-normal); box-shadow: var(--shadow-2); }
     .faq-details:hover { border-color: var(--accent-purple); }
     .faq-details summary {
       font-family: var(--font-mono);
@@ -320,6 +457,7 @@
       padding: 1rem 2rem; border-radius: 8px; background-color: var(--bg-secondary);
       border: 1px solid var(--bg-tertiary); color: var(--text-secondary);
       cursor: pointer; transition: all var(--transition-normal);
+      box-shadow: var(--shadow-2);
     }
     .button-primary:hover, .button-primary:focus-visible {
       background-color: var(--bg-tertiary); color: var(--text-primary);
@@ -327,25 +465,29 @@
     }
 
     .modal {
-      position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+      position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.55); backdrop-filter: blur(5px);
       display: none; align-items: center; justify-content: center; z-index: 100; opacity: 0;
       transition: opacity var(--transition-normal);
     }
+    [data-theme="light"] .modal { background-color: rgba(2,6,23,0.25); }
     .modal.visible { opacity: 1; pointer-events: all; }
     .modal-content {
       background-color: var(--bg-secondary); border-radius: 12px; width: 90%; max-height: 90vh;
       overflow: hidden; display: flex; flex-direction: column; position: relative;
       border: 1px solid var(--bg-tertiary); transform: scale(0.95); transition: transform var(--transition-normal);
+      box-shadow: var(--shadow-2);
     }
     .modal.visible .modal-content { transform: scale(1); }
     .modal-close {
       position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer;
       width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
       border-radius: 50%; background-color: var(--bg-tertiary); transition: all 0.2s ease; z-index: 2; border: none; color: var(--text-primary);
+      box-shadow: var(--shadow-2);
     }
     .modal-close:hover, .modal-close:focus-visible { background-color: var(--accent-danger); transform: rotate(90deg); }
 
     .rules-modal-content { max-width: 800px; background-color: var(--bg-primary); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23111827' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3C/g%3E%3C/svg%3E"); }
+    [data-theme="light"] .rules-modal-content { background-image: none; }
     .rules-modal-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--bg-tertiary); position: relative;}
     .rules-modal-header h3 { font-family: var(--font-mono); color: var(--accent-blue); }
     .rules-modal-header p { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-tertiary); }
@@ -363,7 +505,8 @@
 
     /* ========== SYSTEM INTEGRITY ========== */
     .system-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .status-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: var(--shadow-2); }
+    [data-theme="light"] .status-item { border-color: rgba(2,6,23,0.06); }
     .status-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-family: var(--font-mono); letter-spacing: 1px; }
     .status-value { font-size: 1rem; font-weight: 600; font-family: var(--font-mono); }
     /* Make trigger a proper button */
@@ -408,6 +551,31 @@
     .disclaimer { font-size: 0.875rem; max-width: 700px; margin: 0 auto 1.5rem auto; color: var(--text-tertiary); line-height: 1.5; }
     .credit { font-size: 0.875rem; font-family: var(--font-mono); }
 
+    /* ========== GLOBAL TOOLTIP ========== */
+    .tooltip {
+      position: fixed; z-index: 10000; pointer-events: none; opacity: 0; transform: translateY(4px) scale(0.98);
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: 1px solid var(--glass-stroke); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: var(--font-mono);
+      box-shadow: var(--shadow-2);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+      max-width: min(320px, 80vw);
+    }
+    .tooltip[data-show="true"] { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* ========== BACK-TO-TOP WITH PROGRESS ========== */
+    .back-to-top {
+      position: fixed; right: 20px; bottom: 24px; width: 44px; height: 44px;
+      border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+      border: 1px solid var(--glass-stroke); background:
+        radial-gradient(circle at center, var(--bg-secondary) 60%, transparent 61%) padding-box,
+        conic-gradient(var(--accent-blue) var(--scroll, 0%), rgba(127,127,127,0.2) 0%) border-box;
+      color: var(--text-primary); box-shadow: var(--shadow-2);
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
+      opacity: 0; pointer-events: none;
+    }
+    .back-to-top.visible { opacity: 1; pointer-events: auto; }
+    .back-to-top:active { transform: scale(0.95); }
+
     /* ========== RESPONSIVE + REDUCED MOTION ========== */
     @media (max-width: 768px) {
       section { padding: var(--space-lg) var(--space-md); }
@@ -426,6 +594,17 @@
   <header>
     <nav class="nav" aria-label="Primary">
       <div class="brand">The Grandmaster Sanction</div>
+      <div class="controls">
+        <span class="toggle-label" aria-hidden="true">VOID</span>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false" title="Switch theme">
+          <span class="toggle-track">
+            <span class="toggle-stars" aria-hidden="true"></span>
+            <span class="toggle-rays" aria-hidden="true"></span>
+          </span>
+          <span class="toggle-knob" aria-hidden="true"></span>
+        </button>
+        <span class="toggle-label" aria-hidden="true">DAWN</span>
+      </div>
       <div class="nav-links" role="navigation">
         <a href="#about-lfs">About</a>
         <a href="#leaderboard">Status</a>
@@ -635,12 +814,14 @@
     <p class="credit">Crafted by Anirudh Gupta in collaboration with an AI.</p>
   </footer>
 
+  <!-- Back to Top -->
+  <button id="back-to-top" class="back-to-top" type="button" aria-label="Back to top" title="Back to top">↑</button>
+
   <script defer>
     // Single source of truth: participants
     const participants = [
       { name: "Anirudh Gupta", stage: "2/250", stageLabel: "Rereading the Foreword", progressPercent: 0.8, status: "stalled", statusText: "Distracted by TikTok", lastTransmission: `"It's just following instructions, right?"`, psychStatus: "Calmly accepting his fate.", profile: { avatar: "AG", bio: "Greatly overestimated his patience.", stats: [{ label: "Lines Read", value: "42" }, { label: "Coffee Consumed", value: "17 cups" }, { label: "Existential Crises", value: "8" }]}},
-      { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", lastTransmission: `"Maybe I'll just use Arch."`, psychStatus: "Currently in a state of denial.", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }] }}
-      ,
+      { name: "Sohan Kundu", stage: "5/250", stageLabel: "Questioning Life Choices", progressPercent: 2, status: "error", statusText: "Motivation not found", lastTransmission: `"Maybe I'll just use Arch."`, psychStatus: "Currently in a state of denial.", profile: { avatar: "SK", bio: "Thought this would be 'a weekend project'.", stats: [{ label: "Pages Skimmed", value: "23" }, { label: "System Crashes", value: "3" }, { label: "Stack Overflow Visits", value: "127" }] }},
       { name: "Tathya Gohil", stage: "8/250", stageLabel: "Pretending to Progress", progressPercent: 3.2, status: "active", statusText: "Actively procrastinating", lastTransmission: `"The compiler and I have creative differences."`, psychStatus: "Has started referring to GCC as 'My Nemesis'.", profile: { avatar: "TG", bio: "The only one who actually read the introduction.", stats: [{ label: "Terminal Tabs Open", value: "23" }, { label: "Spreadsheets Made", value: "4" }, { label: "Actual Progress", value: "1%" }] }},
       { name: "Kalp", stage: "0/250", stageLabel: "Still Installing Linux", progressPercent: 0, status: "error", statusText: "Dual-boot gone wrong", lastTransmission: `"Wait, which drive is /dev/sda?"`, psychStatus: "Blaming the hardware.", profile: { avatar: "K", bio: "Still trying to install regular Linux.", stats: [{ label: "OSes Broken", value: "2" }, { label: "Data Lost", value: "All of it" }, { label: "GRUB Errors", value: "∞" }] }},
       { name: "Lakshya", stage: "15/250", stageLabel: "Compile Error #342", progressPercent: 6, status: "active", statusText: "Debugging sanity", lastTransmission: `"The error messages are speaking to me now."`, psychStatus: "Believes the error messages are speaking to him.", profile: { avatar: "L", bio: "Has gotten furthest, which isn't saying much.", stats: [{ label: "Packages Built", value: "3" }, { label: "Error Messages", value: "2,417" }, { label: "Hair Lost", value: "73%" }] }},
@@ -652,6 +833,45 @@
     // Utilities
     const qs = (sel, ctx = document) => ctx.querySelector(sel);
     const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+    // THEME: init + toggle + meta theme color
+    function getSystemTheme() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', theme);
+      // theme-color meta for nice mobile statusbar
+      const meta = qs('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#0a0e17' : '#f8fafc');
+      // Toggle button state
+      const btn = qs('#theme-toggle');
+      if (btn) btn.setAttribute('aria-pressed', theme === 'light');
+    }
+    function initTheme() {
+      const saved = localStorage.getItem('tgs-theme');
+      const theme = saved || getSystemTheme();
+      applyTheme(theme);
+      // react to OS changes if user hasn't explicitly chosen
+      if (!saved && window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          applyTheme(e.matches ? 'dark' : 'light');
+        });
+      }
+      const toggle = qs('#theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme');
+          const next = current === 'dark' ? 'light' : 'dark';
+          applyTheme(next);
+          localStorage.setItem('tgs-theme', next);
+          // nice lil ripple on click (no audio)
+          if (!prefersReducedMotion()) {
+            toggle.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.96)' }, { transform: 'scale(1)' }], { duration: 180, easing: 'ease-out' });
+          }
+        });
+      }
+    }
 
     // Leaderboard render
     function renderLeaderboard() {
@@ -924,8 +1144,85 @@
       setInterval(update, 1000);
     }
 
+    // Global tooltips on elements with [data-terminal-info]
+    function initTooltips() {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      document.body.appendChild(tooltip);
+
+      let hideTimeout = null;
+
+      function showTooltip(target, text, x, y) {
+        tooltip.textContent = text;
+        tooltip.dataset.show = 'true';
+        const pad = 10;
+        // measure
+        tooltip.style.left = '0px'; tooltip.style.top = '-9999px'; // offscreen to measure
+        requestAnimationFrame(() => {
+          const rect = tooltip.getBoundingClientRect();
+          let left = x + pad;
+          let top = y + pad;
+          if (left + rect.width + pad > window.innerWidth) left = x - rect.width - pad;
+          if (top + rect.height + pad > window.innerHeight) top = y - rect.height - pad;
+          tooltip.style.left = left + 'px';
+          tooltip.style.top = top + 'px';
+        });
+      }
+      function hideTooltip() {
+        tooltip.dataset.show = 'false';
+      }
+
+      document.addEventListener('mousemove', (e) => {
+        const target = e.target.closest('[data-terminal-info]');
+        clearTimeout(hideTimeout);
+        if (target) {
+          showTooltip(target, target.getAttribute('data-terminal-info'), e.clientX, e.clientY);
+        } else {
+          hideTimeout = setTimeout(hideTooltip, 120);
+        }
+      }, { passive: true });
+    }
+
+    // Active nav on scroll
+    function initActiveNav() {
+      const links = qsa('.nav-links a');
+      const map = new Map(links.map(a => [a.getAttribute('href'), a]));
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = '#' + entry.target.id;
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+          }
+        });
+      }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
+
+      qsa('main section[id], footer#fine-print').forEach(sec => obs.observe(sec));
+    }
+
+    // Back to top + progress ring
+    function initBackToTop() {
+      const btn = qs('#back-to-top');
+      const root = document.documentElement;
+
+      function update() {
+        const max = root.scrollHeight - window.innerHeight;
+        const pct = Math.min(1, Math.max(0, window.scrollY / (max || 1)));
+        btn.style.setProperty('--scroll', (pct * 360) + 'deg');
+        if (window.scrollY > 300) btn.classList.add('visible');
+        else btn.classList.remove('visible');
+      }
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      btn.addEventListener('click', () => {
+        if (prefersReducedMotion()) window.scrollTo(0,0);
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
     // MAIN
     document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
       renderLeaderboard();
       initAnimations();
       typeOutBriefing();
@@ -933,6 +1230,9 @@
       initModals();
       initKernelPanic();
       initLastUpdatedTicker();
+      initTooltips();
+      initActiveNav();
+      initBackToTop();
     });
   </script>
 </body>
